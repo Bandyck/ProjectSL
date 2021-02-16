@@ -21,7 +21,9 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void PlayAttackMontage();
+	void PlaySkill_Q_Montage();
 	void PlaySkill_S_Montage();
+	void PlaySkill_F_Montage();
 	void JumpToAttackMontageSection(int32 NewSection);
 
 public:
@@ -43,7 +45,11 @@ private:
 		UAnimMontage* AttackMontage;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* Skill_Q_Montage;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* Skill_S_Montage;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* Skill_F_Montage;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
 		float Skill_S_CoolTime;
 
