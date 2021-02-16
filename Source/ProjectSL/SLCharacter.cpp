@@ -119,12 +119,26 @@ void ASLCharacter::Skill_F()
 	IsSkilling = true;
 }
 
+void ASLCharacter::Skill_Q()
+{
+	if (IsAttacking) return;
+
+	SLAnim->PlaySkill_Q_Montage();
+	IsSkilling = true;
+}
+
 void ASLCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	CHECK(IsAttacking);
 	CHECK(CurrentCombo > 0);
 	IsAttacking = false;
 	AttackEndComboState();
+}
+
+void ASLCharacter::OnSkill_Q_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	CHECK(IsSkilling);
+	IsSkilling = false;
 }
 
 void ASLCharacter::OnSkill_S_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
@@ -258,6 +272,7 @@ void ASLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ASLCharacter::Attack);
+	PlayerInputComponent->BindAction(TEXT("Skill_Q"), EInputEvent::IE_Pressed, this, &ASLCharacter::Skill_Q);
 	PlayerInputComponent->BindAction(TEXT("Skill_S"), EInputEvent::IE_Pressed, this, &ASLCharacter::Skill_S);
 	PlayerInputComponent->BindAction(TEXT("Skill_F"), EInputEvent::IE_Pressed, this, &ASLCharacter::Skill_F);
 }

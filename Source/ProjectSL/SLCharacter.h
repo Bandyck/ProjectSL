@@ -18,14 +18,17 @@ public:
 	void Attack();
 	void Skill_S();
 	void Skill_F();
+	void Skill_Q();
 
 	UFUNCTION()
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UFUNCTION()
+		void OnSkill_Q_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
 		void OnSkill_S_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UFUNCTION()
 		void OnSkill_F_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
-
+	
 	void AttackStartComboState();
 	void AttackEndComboState();
 	
