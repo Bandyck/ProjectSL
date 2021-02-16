@@ -20,6 +20,12 @@ USLAnimInstance::USLAnimInstance()
 	{
 		Skill_S_Montage = SKILL_S_MONTAGE.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_F_MONTAGE(TEXT("/Game/Blueprints/Character_Skill_F_Montage.Character_Skill_F_Montage"));
+	if (SKILL_F_MONTAGE.Succeeded())
+	{
+		Skill_F_Montage = SKILL_F_MONTAGE.Object;
+	}
 }
 
 void USLAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -44,8 +50,15 @@ void USLAnimInstance::PlayAttackMontage()
 void USLAnimInstance::PlaySkill_S_Montage()
 {
 	CHECK(!IsDead);
-	Skill_S_CoolTime = 3.0f;
+	//Skill_S_CoolTime = 3.0f;
 	Montage_Play(Skill_S_Montage, 1.0f);
+}
+
+void USLAnimInstance::PlaySkill_F_Montage()
+{
+	CHECK(!IsDead);
+	//Skill_F_CoolTime = 3.0f;
+	Montage_Play(Skill_F_Montage, 1.0f);
 }
 
 void USLAnimInstance::JumpToAttackMontageSection(int32 NewSection)
