@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ProjectSL.h"
 #include "Animation/AnimInstance.h"
 #include "SLEnemyAnimInstance.generated.h"
 
@@ -18,7 +18,12 @@ public :
 	USLEnemyAnimInstance();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void PlayAttackMontage();
+	UFUNCTION()
+	void AnimNotify_AttackHitCheck();
 
+protected:
+private:
+	
 private :
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float CurrentPawnSpeed;

@@ -35,6 +35,9 @@ ASLEnemy::ASLEnemy()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 480.0f, 0.0f);
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+
+	AttackRange = 100.0f;
+	AttackRadius = 50.0f;
 }
 
 // Called when the game starts or when spawned
@@ -60,13 +63,12 @@ void ASLEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ASLEnemy::Attack()
 {
-	
 	USLEnemyAnimInstance* AnimInstance = Cast<USLEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	if(AnimInstance == nullptr)
 	{
+		LOG_S(Error);
 		return;
 	}
-	LOG_S(Warning);
 	AnimInstance->PlayAttackMontage();
 }
 

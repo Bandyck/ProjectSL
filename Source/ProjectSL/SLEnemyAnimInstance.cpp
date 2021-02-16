@@ -2,6 +2,8 @@
 
 
 #include "SLEnemyAnimInstance.h"
+#include "SLEnemy.h"
+#include "DrawDebugHelpers.h"
 
 USLEnemyAnimInstance::USLEnemyAnimInstance()
 {
@@ -31,4 +33,61 @@ void USLEnemyAnimInstance::PlayAttackMontage()
 		Montage_Play(AttackMontage, 1.0f);
 	}
 }
+
+void USLEnemyAnimInstance::AnimNotify_AttackHitCheck()
+{
+	ASLEnemy* Enemy = Cast<ASLEnemy>(TryGetPawnOwner());
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, Enemy);
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		Enemy->GetActorLocation(),
+		Enemy->GetActorLocation() + Enemy->GetActorForwardVector() * Enemy->GetAttackRange(),
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel2,
+		FCollisionShape::MakeSphere(Enemy->GetAttackRange()),
+		Params
+	);
+
+#if ENABLE_DRAW_DEBUG
+	FVector TraceVec = Enemy->GetActorForwardVector() * Enemy->GetAttackRange();
+	FVector Center = Enemy->GetActorLocation() + TraceVec * 0.5f;
+	float HalfHeight = Enemy->GetAttackRange() * 0.5f + Enemy->GetAttackRadius();
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+	FColor DrawColor = bResult ? FColor::Red : FColor::Green;
+	float DebugLifeTime = 3.0f;
+
+	DrawDebugCapsule(GetWorld(),
+		Center,
+		HalfHeight,
+		Enemy->GetAttackRadius(),
+		CapsuleRot,
+		DrawColor,
+		false,
+		DebugLifeTime);
+
+#endif // ENABLE_DRAW_DEBUG
+
+	if (bResult)
+	{
+		if (HitResult.Actor.IsValid())
+		{
+			LOG_S(Warning);
+			FDamageEvent DamegeEvent;
+			HitResult.Actor->TakeDamage(10.0f, DamegeEvent, Enemy->GetController(), Enemy);
+		}
+		else
+		{
+			Montage_Stop(1.0f, AttackMontage);
+			Enemy->OnAttackEnd.Broadcast();
+		}
+	}
+	else
+	{
+		Montage_Stop(1.0f, AttackMontage);
+		Enemy->OnAttackEnd.Broadcast();
+	}
+	LOG_S(Warning);
+}
+
 

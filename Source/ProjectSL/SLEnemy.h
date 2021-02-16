@@ -32,4 +32,14 @@ protected:
 
 public:	
 	FOnAttackEndDelegate OnAttackEnd;
+
+	float GetAttackRange() { return AttackRange; }
+	void SetAttackRange(float attackRange) { AttackRange = attackRange; }
+
+	float GetAttackRadius() { return AttackRadius; }
+	void SetAttackRadius(float attackRadius) { AttackRadius = attackRadius; }
+protected:
+	float AttackRange;
+	float AttackRadius;
+private:
 };
