@@ -18,9 +18,13 @@ public :
 	USLEnemyAnimInstance();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void PlayAttackMontage();
+	void PlayHitReaction();
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
-	
+	UFUNCTION()
+	void AnimNotify_HitStart();
+	UFUNCTION()
+	void AnimNotify_HitEnd();
 protected:
 private:
 public:

@@ -2,7 +2,10 @@
 
 
 #include "SLEnemyAnimInstance.h"
+
+#include "BrainComponent.h"
 #include "SLEnemy.h"
+#include "SLEnemyAIController.h"
 #include "DrawDebugHelpers.h"
 
 USLEnemyAnimInstance::USLEnemyAnimInstance()
@@ -40,6 +43,15 @@ void USLEnemyAnimInstance::PlayAttackMontage()
 		Montage_Play(AttackMontage, 1.0f);
 	}
 }
+
+void USLEnemyAnimInstance::PlayHitReaction()
+{
+	if(!Montage_IsPlaying(HitReactionMontage))
+	{
+		Montage_Play(HitReactionMontage, 1.0f);
+	}
+}
+
 
 void USLEnemyAnimInstance::AnimNotify_AttackHitCheck()
 {
@@ -104,5 +116,34 @@ void USLEnemyAnimInstance::AnimNotify_AttackHitCheck()
 	}
 	LOG_S(Warning);
 }
+
+void USLEnemyAnimInstance::AnimNotify_HitStart()
+{
+	ASLEnemy* Enemy = Cast<ASLEnemy>(TryGetPawnOwner());
+	ASLEnemyAIController* AIController = Cast<class ASLEnemyAIController>(Enemy->GetController());
+	if (AIController != nullptr)
+	{
+		AIController->GetBrainComponent()->StopLogic("HitStart");
+	}
+	else
+	{
+		LOG_S(Error);
+	}
+}
+
+void USLEnemyAnimInstance::AnimNotify_HitEnd()
+{
+	ASLEnemy* Enemy = Cast<ASLEnemy>(TryGetPawnOwner());
+	ASLEnemyAIController* AIController = Cast<class ASLEnemyAIController>(Enemy->GetController());
+	if (AIController != nullptr)
+	{
+		AIController->GetBrainComponent()->StartLogic();
+	}
+	else
+	{
+		LOG_S(Error);
+	}
+}
+
 
 

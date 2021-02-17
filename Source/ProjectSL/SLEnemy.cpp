@@ -44,7 +44,7 @@ ASLEnemy::ASLEnemy()
 void ASLEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -80,6 +80,8 @@ void ASLEnemy::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 float ASLEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
+	LOG_S(Warning);
+	USLEnemyAnimInstance* AnimInstance = Cast<USLEnemyAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance->PlayHitReaction();
 	return FinalDamage;
 }
