@@ -4,6 +4,7 @@
 #include "SLIsInAttackRangeBTDecorator.h"
 #include "SLEnemyAIController.h"
 #include "SLCharacter.h"
+#include "SLEnemy.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 USLIsInAttackRangeBTDecorator::USLIsInAttackRangeBTDecorator()
@@ -15,12 +16,12 @@ bool USLIsInAttackRangeBTDecorator::CalculateRawConditionValue(UBehaviorTreeComp
 {
 	bool bResult = Super::CalculateRawConditionValue(OwnerComp, NodeMemory);
 
-	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
+	ASLEnemy* ControllingPawn = Cast<ASLEnemy>(OwnerComp.GetAIOwner()->GetPawn());
 	//CHECK(ControllingPawn != nullptr);
 
 	ASLCharacter* Target = Cast<ASLCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ASLEnemyAIController::TargetKey));
 	//CHECK(Target != nullptr);
 
-	bResult = (Target->GetDistanceTo(ControllingPawn) <= 200.0f);
+	bResult = (Target->GetDistanceTo(ControllingPawn) <= ControllingPawn->GetAttackRange());
 	return bResult;
 }
