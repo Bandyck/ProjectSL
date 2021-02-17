@@ -36,8 +36,8 @@ ASLEnemy::ASLEnemy()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 480.0f, 0.0f);
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 
-	AttackRange = 100.0f;
-	AttackRadius = 50.0f;
+	AttackRange = 200.0f;
+	AttackRadius = 100.0f;
 }
 
 // Called when the game starts or when spawned
@@ -77,3 +77,9 @@ void ASLEnemy::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	OnAttackEnd.Broadcast();
 }
 
+float ASLEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	return FinalDamage;
+}

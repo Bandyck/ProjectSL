@@ -8,8 +8,15 @@
 USLEnemyAnimInstance::USLEnemyAnimInstance()
 {
 	CurrentPawnSpeed = 0;
+	AttackCount = 0;
 	
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/Blueprints/GreaterSpider_Attack_Montage.GreaterSpider_Attack_Montage"));
+	if (ATTACK_MONTAGE.Succeeded())
+	{
+		//LOG_S(Warning);
+		AttackMontage = ATTACK_MONTAGE.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> HITREACTION_MONTAGE(TEXT("/Game/Blueprints/GreaterSpider_ReactionFront_Montage.GreaterSpider_ReactionFront_Montage"));
 	if (ATTACK_MONTAGE.Succeeded())
 	{
 		//LOG_S(Warning);
@@ -72,18 +79,26 @@ void USLEnemyAnimInstance::AnimNotify_AttackHitCheck()
 	{
 		if (HitResult.Actor.IsValid())
 		{
-			LOG_S(Warning);
 			FDamageEvent DamegeEvent;
 			HitResult.Actor->TakeDamage(10.0f, DamegeEvent, Enemy->GetController(), Enemy);
+			AttackCount++;
+			if(AttackCount == 3)
+			{
+				AttackCount = 0;
+				Montage_Stop(1.0f, AttackMontage);
+				Enemy->OnAttackEnd.Broadcast();
+			}
 		}
 		else
 		{
+			AttackCount = 0;
 			Montage_Stop(1.0f, AttackMontage);
 			Enemy->OnAttackEnd.Broadcast();
 		}
 	}
 	else
 	{
+		AttackCount = 0;
 		Montage_Stop(1.0f, AttackMontage);
 		Enemy->OnAttackEnd.Broadcast();
 	}
