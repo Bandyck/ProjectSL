@@ -20,14 +20,19 @@ public :
 	void PlayAttackMontage();
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
-
+	
 protected:
 private:
-	
+public:
+protected:
+	uint8 AttackCount;
 private :
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float CurrentPawnSpeed;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;
+	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* HitReactionMontage;
 };
