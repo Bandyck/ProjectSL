@@ -57,6 +57,7 @@ void USLCharacterStatComponent::SetDamage(float NewDamage)
 void USLCharacterStatComponent::SetHP(float NewHP)
 {
 	CurrentHP = NewHP;
+	LOG(Warning, TEXT("%f"), NewHP);
 	OnHPChanged.Broadcast();
 	if (CurrentHP < KINDA_SMALL_NUMBER)
 	{
