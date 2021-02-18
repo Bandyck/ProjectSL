@@ -13,18 +13,18 @@ USLEnemyAnimInstance::USLEnemyAnimInstance()
 	CurrentPawnSpeed = 0;
 	AttackCount = 0;
 	
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/Blueprints/GreaterSpider_Attack_Montage.GreaterSpider_Attack_Montage"));
-	if (ATTACK_MONTAGE.Succeeded())
-	{
-		//LOG_S(Warning);
-		AttackMontage = ATTACK_MONTAGE.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> HITREACTION_MONTAGE(TEXT("/Game/Blueprints/GreaterSpider_ReactionFront_Montage.GreaterSpider_ReactionFront_Montage"));
-	if (ATTACK_MONTAGE.Succeeded())
-	{
-		//LOG_S(Warning);
-		AttackMontage = ATTACK_MONTAGE.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/Blueprints/GreaterSpider_Attack_Montage.GreaterSpider_Attack_Montage"));
+	//if (ATTACK_MONTAGE.Succeeded())
+	//{
+	//	//LOG_S(Warning);
+	//	AttackMontage = ATTACK_MONTAGE.Object;
+	//}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> HITREACTION_MONTAGE(TEXT("/Game/Blueprints/GreaterSpider_ReactionFront_Montage.GreaterSpider_ReactionFront_Montage"));
+	//if (ATTACK_MONTAGE.Succeeded())
+	//{
+	//	//LOG_S(Warning);
+	//	HitReactionMontage = HITREACTION_MONTAGE.Object;
+	//}
 }
 
 void USLEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -38,6 +38,7 @@ void USLEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void USLEnemyAnimInstance::PlayAttackMontage()
 {
+	LOG_S(Warning);
 	if (!Montage_IsPlaying(AttackMontage))
 	{
 		Montage_Play(AttackMontage, 1.0f);
@@ -46,10 +47,10 @@ void USLEnemyAnimInstance::PlayAttackMontage()
 
 void USLEnemyAnimInstance::PlayHitReaction()
 {
-	if(!Montage_IsPlaying(HitReactionMontage))
-	{
-		Montage_Play(HitReactionMontage, 1.0f);
-	}
+	LOG_S(Warning);
+	
+	StopAllMontages(0.3f);
+	Montage_Play(HitReactionMontage);
 }
 
 
@@ -114,12 +115,17 @@ void USLEnemyAnimInstance::AnimNotify_AttackHitCheck()
 		Montage_Stop(1.0f, AttackMontage);
 		Enemy->OnAttackEnd.Broadcast();
 	}
-	LOG_S(Warning);
 }
 
 void USLEnemyAnimInstance::AnimNotify_HitStart()
 {
+	LOG_S(Warning);
 	ASLEnemy* Enemy = Cast<ASLEnemy>(TryGetPawnOwner());
+	if(Enemy == nullptr)
+	{
+		LOG_S(Error);
+	}
+	Enemy->OnAttackEnd.Broadcast();
 	ASLEnemyAIController* AIController = Cast<class ASLEnemyAIController>(Enemy->GetController());
 	if (AIController != nullptr)
 	{
@@ -133,6 +139,7 @@ void USLEnemyAnimInstance::AnimNotify_HitStart()
 
 void USLEnemyAnimInstance::AnimNotify_HitEnd()
 {
+	LOG_S(Warning);
 	ASLEnemy* Enemy = Cast<ASLEnemy>(TryGetPawnOwner());
 	ASLEnemyAIController* AIController = Cast<class ASLEnemyAIController>(Enemy->GetController());
 	if (AIController != nullptr)

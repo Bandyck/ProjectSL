@@ -14,19 +14,21 @@ ASLEnemy::ASLEnemy()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_CHARACTER(TEXT("/Game/InfinityBladeAdversaries/Enemy/Enemy_Great_Spider/SK_Greater_Spider.SK_Greater_Spider"));
-	if (SK_CHARACTER.Succeeded())
-	{
-		GetMesh()->SetSkeletalMesh(SK_CHARACTER.Object);
-		GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
-		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	}
-	static ConstructorHelpers::FClassFinder<UAnimInstance> ENEMY_ANIMINSTANCE(TEXT("/Game/Blueprints/GreaterSpiderAnimBlueprint.GreaterSpiderAnimBlueprint_C"));
-	if (ENEMY_ANIMINSTANCE.Succeeded())
-	{
-		GetMesh()->SetAnimInstanceClass(ENEMY_ANIMINSTANCE.Class);
-	}
-
+	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_CHARACTER(TEXT("/Game/InfinityBladeAdversaries/Enemy/Enemy_Great_Spider/SK_Greater_Spider.SK_Greater_Spider"));
+	//if (SK_CHARACTER.Succeeded())
+	//{
+	//	GetMesh()->SetSkeletalMesh(SK_CHARACTER.Object);
+	//	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
+	//	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	//}
+	//static ConstructorHelpers::FClassFinder<UAnimInstance> ENEMY_ANIMINSTANCE(TEXT("/Game/Blueprints/GreaterSpiderAnimBlueprint.GreaterSpiderAnimBlueprint_C"));
+	//if (ENEMY_ANIMINSTANCE.Succeeded())
+	//{
+	//	GetMesh()->SetAnimInstanceClass(ENEMY_ANIMINSTANCE.Class);
+	//}
+	
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("SLCharacter"));
+	
 	AIControllerClass = ASLEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
@@ -38,6 +40,7 @@ ASLEnemy::ASLEnemy()
 
 	AttackRange = 200.0f;
 	AttackRadius = 100.0f;
+	
 }
 
 // Called when the game starts or when spawned
@@ -72,16 +75,12 @@ void ASLEnemy::Attack()
 	AnimInstance->PlayAttackMontage();
 }
 
-void ASLEnemy::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
-{
-	OnAttackEnd.Broadcast();
-}
 
 float ASLEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	LOG_S(Warning);
 	USLEnemyAnimInstance* AnimInstance = Cast<USLEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->PlayHitReaction();
+	OnAttackEnd.Broadcast();
 	return FinalDamage;
 }
