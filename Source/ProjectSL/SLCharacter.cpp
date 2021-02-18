@@ -205,10 +205,9 @@ void ASLCharacter::AttackCheck()
 
 	if (bResult)
 	{
+		LOG_S(Warning);
 		if (HitResult.Actor.IsValid())
 		{
-			LOG_S(Warning);
-
 			FDamageEvent DamegeEvent;
 			HitResult.Actor->TakeDamage(CharacterStat->GetAttack(), DamegeEvent, GetController(), this);
 		}
