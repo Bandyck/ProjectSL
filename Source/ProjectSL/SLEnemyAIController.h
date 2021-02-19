@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class PROJECTSL_API ASLEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
@@ -27,9 +27,9 @@ public :
 	static const FName PatrolPosKey;
 	static const FName TargetKey;
 private:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category = BehaviorTree, Meta = (AllowPrivateAccess = true))
 	class UBehaviorTree* BTAsset;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category = BehaviorTree, Meta = (AllowPrivateAccess = true))
 	class UBlackboardData* BBAsset;
 };

@@ -8,7 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
 
-UCLASS()
+UCLASS(Blueprintable)
 class PROJECTSL_API ASLEnemy : public ACharacter
 {
 	GENERATED_BODY()
@@ -24,8 +24,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void Attack();
-	UFUNCTION()
-	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 protected:
