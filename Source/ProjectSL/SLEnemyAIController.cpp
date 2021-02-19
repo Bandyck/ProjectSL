@@ -13,7 +13,7 @@ const FName ASLEnemyAIController::TargetKey(TEXT("Target"));
 
 ASLEnemyAIController::ASLEnemyAIController()
 {
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBObject(TEXT("/Game/Blueprints/GreaterSpiderBlackBoard.GreaterSpiderBlackBoard"));
+	/*static ConstructorHelpers::FObjectFinder<UBlackboardData> BBObject(TEXT("/Game/Blueprints/GreaterSpiderBlackBoard.GreaterSpiderBlackBoard"));
 	if(BBObject.Succeeded())
 	{
 		BBAsset = BBObject.Object;
@@ -23,7 +23,7 @@ ASLEnemyAIController::ASLEnemyAIController()
 	if(BTObject.Succeeded())
 	{
 		BTAsset = BTObject.Object;
-	}
+	}*/
 }
 
 void ASLEnemyAIController::OnPossess(APawn* InPawn)

@@ -41,4 +41,3 @@ void USLAttackBTTask::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 }
-

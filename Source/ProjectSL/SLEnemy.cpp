@@ -8,6 +8,8 @@
 #include "SLEnemyAnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+
+
 // Sets default values
 ASLEnemy::ASLEnemy()
 {
@@ -37,10 +39,6 @@ ASLEnemy::ASLEnemy()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 480.0f, 0.0f);
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
-
-	AttackRange = 200.0f;
-	AttackRadius = 100.0f;
-	
 }
 
 // Called when the game starts or when spawned
@@ -63,6 +61,30 @@ void ASLEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+
+void ASLEnemy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	FString DataTablePath = TEXT("/Game/Data/NormalMonsterData.NormalMonsterData");
+	UDataTable* DataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, *DataTablePath));
+	if(DataTable == nullptr)
+	{
+		LOG_S(Error);
+		return;
+	}
+
+	FString ContextString;
+	FSLEnemyData *EnemyDataInDT =  DataTable->FindRow<FSLEnemyData>(DataTable->GetRowNames()[ID - 1], ContextString);
+	if(EnemyDataInDT == nullptr)
+	{
+		LOG_S(Error);
+		return;
+	}
+
+	this->EnemyData = *EnemyDataInDT;
+}
+
 
 void ASLEnemy::Attack()
 {
