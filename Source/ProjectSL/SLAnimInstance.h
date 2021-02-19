@@ -22,6 +22,7 @@ public:
 
 	void PlayAttackMontage();
 	void PlaySkill_Q_Montage();
+	void PlaySkill_W_Montage();
 	void PlaySkill_S_Montage();
 	void PlaySkill_F_Montage();
 	void JumpToAttackMontageSection(int32 NewSection);
@@ -46,6 +47,8 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* Skill_Q_Montage;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* Skill_W_Montage;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* Skill_S_Montage;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))

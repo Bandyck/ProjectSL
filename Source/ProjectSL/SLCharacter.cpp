@@ -128,6 +128,14 @@ void ASLCharacter::Skill_Q()
 	IsSkilling = true;
 }
 
+void ASLCharacter::Skill_W()
+{
+	if (IsAttacking) return;
+
+	SLAnim->PlaySkill_W_Montage();
+	IsSkilling = true;
+}
+
 void ASLCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	CHECK(IsAttacking);
@@ -137,6 +145,12 @@ void ASLCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted
 }
 
 void ASLCharacter::OnSkill_Q_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	CHECK(IsSkilling);
+	IsSkilling = false;
+}
+
+void ASLCharacter::OnSkill_W_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	CHECK(IsSkilling);
 	IsSkilling = false;
@@ -241,6 +255,8 @@ void ASLCharacter::PostInitializeComponents()
 	CHECK(nullptr != SLAnim);
 
 	SLAnim->OnMontageEnded.AddDynamic(this, &ASLCharacter::OnAttackMontageEnded);
+	SLAnim->OnMontageEnded.AddDynamic(this, &ASLCharacter::OnSkill_Q_MontageEnded);
+	SLAnim->OnMontageEnded.AddDynamic(this, &ASLCharacter::OnSkill_W_MontageEnded);
 	SLAnim->OnMontageEnded.AddDynamic(this, &ASLCharacter::OnSkill_S_MontageEnded);
 	SLAnim->OnMontageEnded.AddDynamic(this, &ASLCharacter::OnSkill_F_MontageEnded);
 
@@ -279,6 +295,7 @@ void ASLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ASLCharacter::Attack);
 	PlayerInputComponent->BindAction(TEXT("Skill_Q"), EInputEvent::IE_Pressed, this, &ASLCharacter::Skill_Q);
+	PlayerInputComponent->BindAction(TEXT("Skill_W"), EInputEvent::IE_Pressed, this, &ASLCharacter::Skill_W);
 	PlayerInputComponent->BindAction(TEXT("Skill_S"), EInputEvent::IE_Pressed, this, &ASLCharacter::Skill_S);
 	PlayerInputComponent->BindAction(TEXT("Skill_F"), EInputEvent::IE_Pressed, this, &ASLCharacter::Skill_F);
 }
