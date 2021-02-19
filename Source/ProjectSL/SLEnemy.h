@@ -60,11 +60,13 @@ protected:
 public:	
 	FOnAttackEndDelegate OnAttackEnd;
 
-	float GetAttackRange() { return EnemyData.AttackRange; }
+	float GetAttackRange() const { return EnemyData.AttackRange; }
 	void SetAttackRange(float attackRange) { EnemyData.AttackRange = attackRange; }
 
-	float GetAttackRadius() { return EnemyData.AttackRange; }
+	float GetAttackRadius() const { return EnemyData.AttackRange; }
 	void SetAttackRadius(float attackRadius) { EnemyData.AttackRange = attackRadius; }
+
+	 float GetAttackPower() const { return EnemyData.AttackPower;  }
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Type, Meta = (AllowPrivateAccess = true))
 	FSLEnemyData EnemyData;

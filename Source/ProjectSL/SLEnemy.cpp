@@ -75,6 +75,12 @@ void ASLEnemy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEven
 	}
 
 	FString ContextString;
+	
+	if(DataTable->GetRowNames().Num() < ID)
+	{
+		LOG_S(Error);
+		return;
+	}
 	FSLEnemyData *EnemyDataInDT =  DataTable->FindRow<FSLEnemyData>(DataTable->GetRowNames()[ID - 1], ContextString);
 	if(EnemyDataInDT == nullptr)
 	{
@@ -83,6 +89,7 @@ void ASLEnemy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEven
 	}
 
 	this->EnemyData = *EnemyDataInDT;
+	GetCharacterMovement()->MaxWalkSpeed = this->EnemyData.WalkSpeed;
 }
 
 
