@@ -38,17 +38,18 @@ void USLEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void USLEnemyAnimInstance::PlayAttackMontage()
 {
-	LOG_S(Warning);
 	if (!Montage_IsPlaying(AttackMontage))
 	{
 		Montage_Play(AttackMontage, 1.0f);
+	}
+	else 
+	{
+		LOG_S(Error);
 	}
 }
 
 void USLEnemyAnimInstance::PlayHitReaction()
 {
-	LOG_S(Warning);
-	
 	StopAllMontages(0.3f);
 	Montage_Play(HitReactionMontage);
 }
@@ -56,6 +57,7 @@ void USLEnemyAnimInstance::PlayHitReaction()
 
 void USLEnemyAnimInstance::AnimNotify_AttackHitCheck()
 {
+	LOG(Warning, TEXT("%s"), *AttackMontage->GetName());
 	ASLEnemy* Enemy = Cast<ASLEnemy>(TryGetPawnOwner());
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, Enemy);
@@ -92,10 +94,10 @@ void USLEnemyAnimInstance::AnimNotify_AttackHitCheck()
 	{
 		if (HitResult.Actor.IsValid())
 		{
-			FDamageEvent DamegeEvent;
-			HitResult.Actor->TakeDamage(10.0f, DamegeEvent, Enemy->GetController(), Enemy);
+			FDamageEvent DamageEvent;
+			HitResult.Actor->TakeDamage(10.0f, DamageEvent, Enemy->GetController(), Enemy);
 			AttackCount++;
-			if(AttackCount == 3)
+			if(AttackCount == Enemy->GetAttackComboCount())
 			{
 				AttackCount = 0;
 				Montage_Stop(1.0f, AttackMontage);

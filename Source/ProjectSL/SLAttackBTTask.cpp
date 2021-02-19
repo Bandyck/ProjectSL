@@ -18,7 +18,10 @@ EBTNodeResult::Type USLAttackBTTask::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 
 	ASLEnemy* Enemy = Cast<ASLEnemy>(OwnerComp.GetAIOwner()->GetPawn());
 	if (Enemy == nullptr)
+	{
+		LOG_S(Error);
 		return EBTNodeResult::Failed;
+	}
 
 	Enemy->Attack();
 	IsAttacking = true;

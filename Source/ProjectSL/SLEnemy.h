@@ -14,7 +14,7 @@ struct FSLEnemyData : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 public:
 
-	FSLEnemyData() : ID(0), Name("NoName"), HP(0), AttackPower(0), AttackRange(0), RecognitionRange(0), WalkSpeed(0)
+	FSLEnemyData() : ID(0), Name("NoName"), HP(0), AttackPower(0), AttackRange(0), AttackComboCount(0),RecognitionRange(0), WalkSpeed(0)
 	{}
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
 	uint8 ID;
@@ -26,6 +26,8 @@ public:
 	float AttackPower;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
 	float AttackRange;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
+	uint8 AttackComboCount;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
 	float RecognitionRange;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
@@ -66,7 +68,9 @@ public:
 	float GetAttackRadius() const { return EnemyData.AttackRange; }
 	void SetAttackRadius(float attackRadius) { EnemyData.AttackRange = attackRadius; }
 
-	 float GetAttackPower() const { return EnemyData.AttackPower;  }
+	float GetAttackPower() const { return EnemyData.AttackPower;  }
+
+	float GetAttackComboCount() const { return EnemyData.AttackComboCount; }
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Type, Meta = (AllowPrivateAccess = true))
 	FSLEnemyData EnemyData;
