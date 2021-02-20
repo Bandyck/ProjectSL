@@ -36,6 +36,7 @@ ASLCharacter::ASLCharacter()
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
+	// Need to Integrate UI
 	HPBarWidget->SetupAttachment(GetMesh());
 	Skill_Quickslot->SetupAttachment(GetMesh());
 
@@ -136,6 +137,14 @@ void ASLCharacter::Skill_W()
 	IsSkilling = true;
 }
 
+void ASLCharacter::Skill_R()
+{
+	if (IsAttacking) return;
+
+	SLAnim->PlaySkill_R_Montage();
+	IsSkilling = true;
+}
+
 void ASLCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	CHECK(IsAttacking);
@@ -151,6 +160,12 @@ void ASLCharacter::OnSkill_Q_MontageEnded(UAnimMontage* Montage, bool bInterrupt
 }
 
 void ASLCharacter::OnSkill_W_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	CHECK(IsSkilling);
+	IsSkilling = false;
+}
+
+void ASLCharacter::OnSkill_R_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	CHECK(IsSkilling);
 	IsSkilling = false;
@@ -257,6 +272,7 @@ void ASLCharacter::PostInitializeComponents()
 	SLAnim->OnMontageEnded.AddDynamic(this, &ASLCharacter::OnAttackMontageEnded);
 	SLAnim->OnMontageEnded.AddDynamic(this, &ASLCharacter::OnSkill_Q_MontageEnded);
 	SLAnim->OnMontageEnded.AddDynamic(this, &ASLCharacter::OnSkill_W_MontageEnded);
+	SLAnim->OnMontageEnded.AddDynamic(this, &ASLCharacter::OnSkill_R_MontageEnded);
 	SLAnim->OnMontageEnded.AddDynamic(this, &ASLCharacter::OnSkill_S_MontageEnded);
 	SLAnim->OnMontageEnded.AddDynamic(this, &ASLCharacter::OnSkill_F_MontageEnded);
 
@@ -296,6 +312,7 @@ void ASLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ASLCharacter::Attack);
 	PlayerInputComponent->BindAction(TEXT("Skill_Q"), EInputEvent::IE_Pressed, this, &ASLCharacter::Skill_Q);
 	PlayerInputComponent->BindAction(TEXT("Skill_W"), EInputEvent::IE_Pressed, this, &ASLCharacter::Skill_W);
+	PlayerInputComponent->BindAction(TEXT("Skill_R"), EInputEvent::IE_Pressed, this, &ASLCharacter::Skill_R);
 	PlayerInputComponent->BindAction(TEXT("Skill_S"), EInputEvent::IE_Pressed, this, &ASLCharacter::Skill_S);
 	PlayerInputComponent->BindAction(TEXT("Skill_F"), EInputEvent::IE_Pressed, this, &ASLCharacter::Skill_F);
 }

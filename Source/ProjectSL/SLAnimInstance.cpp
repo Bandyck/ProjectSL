@@ -27,6 +27,12 @@ USLAnimInstance::USLAnimInstance()
 		Skill_W_Montage = SKILL_W_MONTAGE.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_R_MONTAGE(TEXT("/Game/Blueprints/Character_Skill_R_Montage.Character_Skill_R_Montage"));
+	if (SKILL_R_MONTAGE.Succeeded())
+	{
+		Skill_R_Montage = SKILL_R_MONTAGE.Object;
+	}
+
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_S_MONTAGE(TEXT("/Game/Blueprints/Character_Skill_S_Montage.Character_Skill_S_Montage"));
 	if (SKILL_S_MONTAGE.Succeeded())
 	{
@@ -71,6 +77,13 @@ void USLAnimInstance::PlaySkill_W_Montage()
 	CHECK(!IsDead);
 	//Skill_S_CoolTime = 3.0f;
 	Montage_Play(Skill_W_Montage, 1.0f);
+}
+
+void USLAnimInstance::PlaySkill_R_Montage()
+{
+	CHECK(!IsDead);
+	//Skill_S_CoolTime = 3.0f;
+	Montage_Play(Skill_R_Montage, 1.0f);
 }
 
 void USLAnimInstance::PlaySkill_S_Montage()

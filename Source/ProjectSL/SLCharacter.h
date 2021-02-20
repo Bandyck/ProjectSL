@@ -18,6 +18,7 @@ public:
 	void Attack();
 	void Skill_Q();
 	void Skill_W();
+	void Skill_R();
 	void Skill_S();
 	void Skill_F();
 
@@ -27,6 +28,8 @@ public:
 		void OnSkill_Q_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UFUNCTION()
 		void OnSkill_W_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
+		void OnSkill_R_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UFUNCTION()
 		void OnSkill_S_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UFUNCTION()
