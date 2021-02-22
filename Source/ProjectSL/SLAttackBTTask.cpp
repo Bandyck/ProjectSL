@@ -29,7 +29,6 @@ EBTNodeResult::Type USLAttackBTTask::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 		{
 			IsAttacking = false;
 		});
-	
 	return EBTNodeResult::InProgress;
 }
 

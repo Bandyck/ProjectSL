@@ -50,8 +50,26 @@ void USLEnemyAnimInstance::PlayAttackMontage()
 
 void USLEnemyAnimInstance::PlayHitReaction()
 {
-	StopAllMontages(0.3f);
-	Montage_Play(HitReactionMontage);
+	if (Montage_IsPlaying(AttackMontage))
+	{
+		Montage_Stop(0.3f, AttackMontage);
+	}
+	Montage_Play(HitReactionMontage, 1.0f);
+	ASLEnemy* Enemy = Cast<ASLEnemy>(TryGetPawnOwner());
+	if (Enemy == nullptr)
+	{
+		LOG_S(Error);
+	}
+	Enemy->OnAttackEnd.Broadcast();
+	ASLEnemyAIController* AIController = Cast<class ASLEnemyAIController>(Enemy->GetController());
+	if (AIController != nullptr)
+	{
+		AIController->GetBrainComponent()->StopLogic("HitStart");
+	}
+	else
+	{
+		LOG_S(Error);
+	}
 }
 
 
@@ -119,29 +137,28 @@ void USLEnemyAnimInstance::AnimNotify_AttackHitCheck()
 	}
 }
 
-void USLEnemyAnimInstance::AnimNotify_HitStart()
-{
-	LOG_S(Warning);
-	ASLEnemy* Enemy = Cast<ASLEnemy>(TryGetPawnOwner());
-	if(Enemy == nullptr)
-	{
-		LOG_S(Error);
-	}
-	Enemy->OnAttackEnd.Broadcast();
-	ASLEnemyAIController* AIController = Cast<class ASLEnemyAIController>(Enemy->GetController());
-	if (AIController != nullptr)
-	{
-		AIController->GetBrainComponent()->StopLogic("HitStart");
-	}
-	else
-	{
-		LOG_S(Error);
-	}
-}
+//void USLEnemyAnimInstance::AnimNotify_HitStart()
+//{
+//	ASLEnemy* Enemy = Cast<ASLEnemy>(TryGetPawnOwner());
+//	if(Enemy == nullptr)
+//	{
+//		LOG_S(Error);
+//	}
+//	Enemy->OnAttackEnd.Broadcast();
+//	ASLEnemyAIController* AIController = Cast<class ASLEnemyAIController>(Enemy->GetController());
+//	if (AIController != nullptr)
+//	{
+//		AIController->GetBrainComponent()->StopLogic("HitStart");
+//	}
+//	else
+//	{
+//		LOG_S(Error);
+//	}
+//}
 
 void USLEnemyAnimInstance::AnimNotify_HitEnd()
 {
-	LOG_S(Warning);
+	LOG_S(Error);
 	ASLEnemy* Enemy = Cast<ASLEnemy>(TryGetPawnOwner());
 	ASLEnemyAIController* AIController = Cast<class ASLEnemyAIController>(Enemy->GetController());
 	if (AIController != nullptr)
