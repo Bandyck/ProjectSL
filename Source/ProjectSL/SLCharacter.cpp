@@ -69,6 +69,7 @@ ASLCharacter::ASLCharacter()
 	{
 		HPBarWidget->SetWidgetClass(UI_HUD.Class);
 		HPBarWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
+		HPBarWidget->SetReceivesDecals(false);
 	}
 	HPBarWidget->SetRelativeLocation(FVector(0.0f, 0.0f, 230.0f));
 	HPBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
@@ -78,9 +79,13 @@ ASLCharacter::ASLCharacter()
 	{
 		Skill_Quickslot->SetWidgetClass(UI_SKILL.Class);
 		Skill_Quickslot->SetDrawSize(FVector2D(256.0f, 128.0f));
+		Skill_Quickslot->SetReceivesDecals(false);
 	}
 	Skill_Quickslot->SetRelativeLocation(FVector(0.0f, 0.0f, -720.0f));
 	Skill_Quickslot->SetWidgetSpace(EWidgetSpace::Screen);
+
+	GetMesh()->SetReceivesDecals(false);
+	GetCapsuleComponent()->SetReceivesDecals(false);
 }
 
 void ASLCharacter::Attack()

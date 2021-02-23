@@ -41,7 +41,7 @@ EBTNodeResult::Type USLSPBOSS_JumpAttackBTTask::ExecuteTask(UBehaviorTreeCompone
 	Enemy->GetCircleProgressIndicator()->SetActorTickEnabled(true);
 	Enemy->GetCircleProgressIndicator()->SetActorLocation(TargetPos);
 	ProgressIndicator = Enemy->GetCircleProgressIndicator();
-	ProgressIndicator->SetActorScale3D(FVector(0.f, 0.f, 0.f));
+	ProgressIndicator->SetActorScale3D(FVector(0.01f, 0.01f, 0.01f));
 	
 	LOG(Warning, TEXT("%s"), *StartPos.ToString());
 	Enemy->JumpAttackEnd.AddLambda([this]()->void
@@ -82,6 +82,7 @@ void USLSPBOSS_JumpAttackBTTask::TickTask(UBehaviorTreeComponent& OwnerComp, uin
 	Enemy->SetActorLocation(Enemy->GetActorLocation() + newLoc);
 
 	FVector newProgressScale = FMath::Lerp(FVector::ZeroVector, FVector::OneVector, DeltaSeconds / AnimLength);
+	newProgressScale.X = 1.0f;
 	ProgressIndicator->SetActorScale3D(ProgressIndicator->GetActorScale3D() + newProgressScale);
 }
 
