@@ -9,6 +9,26 @@
 DECLARE_MULTICAST_DELEGATE(FOnJumpAttackEndDelegate);
 
 UCLASS()
+class PROJECTSL_API UJumpAttackCameraShake : public UCameraShake
+{
+	GENERATED_BODY()
+
+public :
+	UJumpAttackCameraShake()
+	{
+		OscillationDuration = 0.3f;
+		OscillationBlendInTime = 0.15f;
+		OscillationBlendOutTime = 0.15f;
+
+		RotOscillation.Pitch.Amplitude = 1.0f;
+		RotOscillation.Pitch.Frequency = 25.0f;
+
+		RotOscillation.Yaw.Amplitude = -1.0f;
+		RotOscillation.Yaw.Frequency = 25.0f;
+	}
+};
+
+UCLASS()
 class PROJECTSL_API ASLSpiderBoss : public ACharacter
 {
 	GENERATED_BODY()
@@ -35,7 +55,8 @@ public:
 
 	AActor* GetCircleIndicator() const { return CircleIndicator; }
 	AActor* GetCircleProgressIndicator() const { return CircleProgressIndicator; }
-
+	UParticleSystem* GetRockDropParticle() const { return RockDropParticle; }
+	UParticleSystem* GetLandDestroyParticle() const { return LandDestroyParticle; }
 private:
 	AActor* MakeIndicator(FString bluePrintPath);
 public :
@@ -47,6 +68,11 @@ protected:
 	AActor* CircleIndicator;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	AActor* CircleProgressIndicator;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UParticleSystem* RockDropParticle;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UParticleSystem* LandDestroyParticle;
+	UPROPERTY(EditDefaultsOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShake> JumpAttackCameraShakeClass = UJumpAttackCameraShake::StaticClass();
 private :
 };

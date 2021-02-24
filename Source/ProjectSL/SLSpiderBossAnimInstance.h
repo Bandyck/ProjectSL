@@ -19,6 +19,8 @@ public :
 	void JumpAttackStart();
 	UFUNCTION()
 	void AnimNotify_JumpAttackEnd();
+	UFUNCTION()
+	void AnimNotify_DropRock();
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* JumpAttackMontage;

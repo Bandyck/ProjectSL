@@ -23,13 +23,15 @@ EBTNodeResult::Type USLSPBOSS_JumpAttackBTTask::ExecuteTask(UBehaviorTreeCompone
 		LOG_S(Error);
 		return EBTNodeResult::Failed;
 	}
-	AActor* Target = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ASLSpiderBossAIController::TargetKey));
+	ACharacter* Target = Cast<ACharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ASLSpiderBossAIController::TargetKey));
 	if (Target == nullptr)
 	{
 		LOG_S(Error);
 		return EBTNodeResult::Failed;
 	}
+	
 	TargetPos = Target->GetActorLocation();
+	TargetPos.Z -= Target->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 	StartPos = Enemy->GetActorLocation();
 	JumpDir = Target->GetActorLocation() - Enemy->GetActorLocation();
 	
@@ -72,18 +74,24 @@ void USLSPBOSS_JumpAttackBTTask::TickTask(UBehaviorTreeComponent& OwnerComp, uin
 		Enemy->GetCircleIndicator()->SetActorTickEnabled(false);
 		Enemy->GetCircleProgressIndicator()->SetActorHiddenInGame(true);
 		Enemy->GetCircleProgressIndicator()->SetActorTickEnabled(false);
+		
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 	
-	FVector newLoc;
+	/*FVector newLoc;
 	newLoc.X = FMath::Lerp(0.f, JumpDir.X, DeltaSeconds / AnimLength);
 	newLoc.Y = FMath::Lerp(0.f, JumpDir.Y, DeltaSeconds / AnimLength);
 	newLoc.Z = 0;
-	Enemy->SetActorLocation(Enemy->GetActorLocation() + newLoc);
+	Enemy->SetActorLocation(Enemy->GetActorLocation() + newLoc);*/
 
 	FVector newProgressScale = FMath::Lerp(FVector::ZeroVector, FVector::OneVector, DeltaSeconds / AnimLength);
 	newProgressScale.X = 1.0f;
 	ProgressIndicator->SetActorScale3D(ProgressIndicator->GetActorScale3D() + newProgressScale);
+
+	FVector LookVector = TargetPos - StartPos;
+	LookVector.Z = 0.0f;
+	FRotator TargetRot = FRotationMatrix::MakeFromX(LookVector).Rotator();
+	Enemy->SetActorRotation(FMath::RInterpTo(Enemy->GetActorRotation(), TargetRot, GetWorld()->DeltaTimeSeconds, 2.0f));
 }
 
 

@@ -2,6 +2,9 @@
 
 #include "SLSpiderBoss.h"
 #include "SLSpiderBossAnimInstance.h"
+#include "SLSPBOSS_JumpAttackBTTask.h"
+#include "SLSpiderBossAIController.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 
 USLSpiderBossAnimInstance::USLSpiderBossAnimInstance()
 {
@@ -25,4 +28,35 @@ void USLSpiderBossAnimInstance::AnimNotify_JumpAttackEnd()
 {
 	ASLSpiderBoss* Enemy = Cast<ASLSpiderBoss>(TryGetPawnOwner());
 	Enemy->JumpAttackEnd.Broadcast();
+	UBehaviorTreeComponent* BehaviorTree = Cast<UBehaviorTreeComponent>(TryGetPawnOwner()->GetController()->GetComponentByClass(UBehaviorTreeComponent::StaticClass()));
+	if (BehaviorTree == nullptr)
+	{
+		LOG_S(Error);
+		return;
+	}
+	const USLSPBOSS_JumpAttackBTTask* JumpAttackTask = Cast<USLSPBOSS_JumpAttackBTTask>(BehaviorTree->GetActiveNode());
+	if (JumpAttackTask == nullptr)
+	{
+		LOG_S(Error);
+		return;
+	}
+	UGameplayStatics::SpawnEmitterAtLocation(GetOwningActor()->GetWorld(), Enemy->GetLandDestroyParticle(), JumpAttackTask->GetTargetPos(), FRotator::ZeroRotator);
+}
+
+void USLSpiderBossAnimInstance::AnimNotify_DropRock()
+{
+	UBehaviorTreeComponent* BehaviorTree = Cast<UBehaviorTreeComponent>(TryGetPawnOwner()->GetController()->GetComponentByClass(UBehaviorTreeComponent::StaticClass()));
+	if (BehaviorTree == nullptr)
+	{
+		LOG_S(Error);
+		return;
+	}
+	const USLSPBOSS_JumpAttackBTTask* JumpAttackTask = Cast<USLSPBOSS_JumpAttackBTTask>(BehaviorTree->GetActiveNode());
+	if (JumpAttackTask == nullptr)
+	{
+		LOG_S(Error);
+		return;
+	}
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetOwningActor()->GetWorld(), Cast<ASLSpiderBoss>(TryGetPawnOwner())->GetRockDropParticle(), JumpAttackTask->GetTargetPos(), FRotator::ZeroRotator);
 }

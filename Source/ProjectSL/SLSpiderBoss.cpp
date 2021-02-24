@@ -11,12 +11,29 @@ ASLSpiderBoss::ASLSpiderBoss()
 	PrimaryActorTick.bCanEverTick = true;
 	JumpAttackRange = 600.0f;
 	
-	/*static ConstructorHelpers::FObjectFinder<AActor> CIRCLE_DECAL(TEXT("/Game/Blueprints/SpiderBoss/CircleIndicatorDecal.CircleIndicatorDecal"));
-	if (CIRCLE_DECAL.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ROCKDROP_PARTICLE(TEXT("/Game/Blueprints/SpiderBoss/RockDropParticle.RockDropParticle"));
+	if (ROCKDROP_PARTICLE.Succeeded())
 	{
-		CircleIndicator = CIRCLE_DECAL.Object;
-	}*/
+		RockDropParticle = ROCKDROP_PARTICLE.Object;
+	}
 
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> LANDDESTROY_PARTICLE(TEXT("/Game/Blueprints/SpiderBoss/LandDestroyParticle.LandDestroyParticle"));
+	if (ROCKDROP_PARTICLE.Succeeded())
+	{
+		LandDestroyParticle = LANDDESTROY_PARTICLE.Object;
+	}
+
+	/*JumpAttackCameraShake = UCameraShake::StaticClass()->GetDefaultObject<UCameraShake>();
+	
+	JumpAttackCameraShake->OscillationDuration = 0.8f;
+	JumpAttackCameraShake->OscillationBlendInTime = 0.6f;
+	JumpAttackCameraShake->OscillationBlendInTime = 0.1f;
+
+	JumpAttackCameraShake->RotOscillation.Pitch.Amplitude = 5.0f;
+	JumpAttackCameraShake->RotOscillation.Pitch.Frequency = 25.0f;
+
+	JumpAttackCameraShake->RotOscillation.Yaw.Amplitude = 5.0f;
+	JumpAttackCameraShake->RotOscillation.Yaw.Frequency = 25.0f;*/
 }
 
 // Called when the game starts or when spawned
@@ -48,6 +65,10 @@ void ASLSpiderBoss::BeginPlay()
 	CircleIndicator->SetActorHiddenInGame(true);
 	CircleIndicator->SetActorTickEnabled(false);*/
 
+	JumpAttackEnd.AddLambda([this]()->void{
+		GetWorld()->GetFirstPlayerController()->ClientPlayCameraShake(JumpAttackCameraShakeClass);
+	});
+	
 	CircleIndicator = MakeIndicator("/Game/Blueprints/SpiderBoss/CircleIndicatorDecal.CircleIndicatorDecal");
 	CircleProgressIndicator = MakeIndicator("/Game/Blueprints/SpiderBoss/CircleProgressIndicatorDecal.CircleProgressIndicatorDecal");
 }
@@ -74,7 +95,6 @@ void ASLSpiderBoss::JumpAttack()
 		LOG_S(Error);
 		return;
 	}
-	
 	AnimInstance->JumpAttackStart();
 }
 

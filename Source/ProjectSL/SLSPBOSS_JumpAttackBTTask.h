@@ -17,6 +17,7 @@ class PROJECTSL_API USLSPBOSS_JumpAttackBTTask : public UBTTaskNode
 public:
 	USLSPBOSS_JumpAttackBTTask();
 
+	FVector GetTargetPos() const { return TargetPos; }
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
