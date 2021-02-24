@@ -5,6 +5,7 @@
 #include "SLSPBOSS_JumpAttackBTTask.h"
 #include "SLSpiderBossAIController.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
+#include "DrawDebugHelpers.h"
 
 USLSpiderBossAnimInstance::USLSpiderBossAnimInstance()
 {
@@ -40,6 +41,48 @@ void USLSpiderBossAnimInstance::AnimNotify_JumpAttackEnd()
 		LOG_S(Error);
 		return;
 	}
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, Enemy);
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		JumpAttackTask->GetTargetPos()- 100.f,
+		JumpAttackTask->GetTargetPos() + 100.f,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel2,
+		FCollisionShape::MakeSphere(200.f),
+		Params
+	);
+
+#if ENABLE_DRAW_DEBUG
+	FVector Center = JumpAttackTask->GetTargetPos();
+	FColor DrawColor = bResult ? FColor::Red : FColor::Green;
+	float DebugLifeTime = 3.0f;
+
+	DrawDebugSphere(GetWorld(), Center, 200.f, 20, DrawColor, false, DebugLifeTime);
+	DrawDebugSphere(GetWorld(), HitResult.Location, 10.f, 20, DrawColor, false, DebugLifeTime);
+
+#endif // ENABLE_DRAW_DEBUG
+	/*if (bResult)
+	{
+		if (HitResult.Actor.IsValid())
+		{
+			FDamageEvent DamageEvent;
+			HitResult.Actor->TakeDamage(10.0f, DamageEvent, Enemy->GetController(), Enemy);
+			AttackCount++;
+			if (AttackCount == Enemy->GetAttackComboCount())
+			{
+				Enemy->OnAttackEnd.Broadcast();
+			}
+		}
+		else
+		{
+			AttackCount = 0;
+			Montage_Stop(1.0f, AttackMontage);
+			Enemy->OnAttackEnd.Broadcast();
+		}
+	}*/
+	
 	UGameplayStatics::SpawnEmitterAtLocation(GetOwningActor()->GetWorld(), Enemy->GetLandDestroyParticle(), JumpAttackTask->GetTargetPos(), FRotator::ZeroRotator);
 }
 

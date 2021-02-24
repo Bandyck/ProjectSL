@@ -85,6 +85,7 @@ ASLCharacter::ASLCharacter()
 	Skill_Quickslot->SetWidgetSpace(EWidgetSpace::Screen);
 
 	GetMesh()->SetReceivesDecals(false);
+	GetCapsuleComponent()->SetHiddenInGame(false);
 }
 
 void ASLCharacter::Attack()
