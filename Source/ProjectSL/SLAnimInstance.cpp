@@ -9,37 +9,37 @@ USLAnimInstance::USLAnimInstance()
 	Skill_S_CoolTime = 3.0f;
 	IsDead = false;
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/Blueprints/Character_Attack_Montage.Character_Attack_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/Animation/Character_Attack_Montage.Character_Attack_Montage"));
 	if (ATTACK_MONTAGE.Succeeded())
 	{
 		AttackMontage = ATTACK_MONTAGE.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_Q_MONTAGE(TEXT("/Game/Blueprints/Character_Skill_Q_Montage.Character_Skill_Q_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_Q_MONTAGE(TEXT("/Game/Animation/Character_Skill_Q_Montage.Character_Skill_Q_Montage"));
 	if (SKILL_Q_MONTAGE.Succeeded())
 	{
 		Skill_Q_Montage = SKILL_Q_MONTAGE.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_W_MONTAGE(TEXT("/Game/Blueprints/Character_Skill_W_Montage.Character_Skill_W_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_W_MONTAGE(TEXT("/Game/Animation/Character_Skill_W_Montage.Character_Skill_W_Montage"));
 	if (SKILL_W_MONTAGE.Succeeded())
 	{
 		Skill_W_Montage = SKILL_W_MONTAGE.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_R_MONTAGE(TEXT("/Game/Blueprints/Character_Skill_R_Montage.Character_Skill_R_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_R_MONTAGE(TEXT("/Game/Animation/Character_Skill_R_Montage.Character_Skill_R_Montage"));
 	if (SKILL_R_MONTAGE.Succeeded())
 	{
 		Skill_R_Montage = SKILL_R_MONTAGE.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_S_MONTAGE(TEXT("/Game/Blueprints/Character_Skill_S_Montage.Character_Skill_S_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_S_MONTAGE(TEXT("/Game/Animation/Character_Skill_S_Montage.Character_Skill_S_Montage"));
 	if (SKILL_S_MONTAGE.Succeeded())
 	{
 		Skill_S_Montage = SKILL_S_MONTAGE.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_F_MONTAGE(TEXT("/Game/Blueprints/Character_Skill_F_Montage.Character_Skill_F_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_F_MONTAGE(TEXT("/Game/Animation/Character_Skill_F_Montage.Character_Skill_F_Montage"));
 	if (SKILL_F_MONTAGE.Succeeded())
 	{
 		Skill_F_Montage = SKILL_F_MONTAGE.Object;
