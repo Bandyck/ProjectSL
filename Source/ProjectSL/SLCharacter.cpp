@@ -41,7 +41,7 @@ ASLCharacter::ASLCharacter()
 	Skill_Quickslot->SetupAttachment(GetMesh());
 
 	SpringArm->TargetArmLength = 1000.0f;
-	SpringArm->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
+	SpringArm->SetRelativeRotation(FRotator(-45.0f, -90.0f, 0.0f));
 	SpringArm->bUsePawnControlRotation = false;
 	SpringArm->bInheritYaw = false;
 	SpringArm->bInheritPitch = false;
