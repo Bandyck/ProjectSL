@@ -21,8 +21,8 @@ public :
 	void PlayHitReaction();
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
-	UFUNCTION()
-	void AnimNotify_HitStart();
+	/*UFUNCTION()
+	void AnimNotify_HitStart();*/
 	UFUNCTION()
 	void AnimNotify_HitEnd();
 protected:

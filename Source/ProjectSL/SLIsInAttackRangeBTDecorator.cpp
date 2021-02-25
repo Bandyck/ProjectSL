@@ -23,6 +23,5 @@ bool USLIsInAttackRangeBTDecorator::CalculateRawConditionValue(UBehaviorTreeComp
 	//CHECK(Target != nullptr);
 
 	bResult = (Target->GetDistanceTo(ControllingPawn) <= ControllingPawn->GetAttackRange());
-	LOG(Warning, TEXT("%f"), ControllingPawn->GetAttackRange());
 	return bResult;
 }

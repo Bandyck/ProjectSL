@@ -39,6 +39,7 @@ void USLDetectBTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 				DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Green, false, 0.2f);
 				DrawDebugPoint(World, Character->GetActorLocation(), 10.0f, FColor::Blue, false, 0.2f);
 				DrawDebugLine(World, ControllingPawn->GetActorLocation(), Character->GetActorLocation(), FColor::Blue, false, 0.2f);
+				
 				return;
 			}
 		}

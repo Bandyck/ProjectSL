@@ -34,6 +34,5 @@ EBTNodeResult::Type USLTurnToTargetBTTask::ExecuteTask(UBehaviorTreeComponent& O
 	LookVector.Z = 0.0f;
 	FRotator TargetRot = FRotationMatrix::MakeFromX(LookVector).Rotator();
 	Owner->SetActorRotation(FMath::RInterpTo(Owner->GetActorRotation(), TargetRot, GetWorld()->DeltaTimeSeconds, 2.0f));
-
 	return EBTNodeResult::Succeeded;
 }
