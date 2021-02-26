@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ProjectSL.h"
+#include "SLFadeComponent.h"
 #include "GameFramework/Character.h"
 #include "SLCharacter.generated.h"
 
@@ -59,6 +60,8 @@ public:
 		USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		UCameraComponent* Camera;
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+		USLFadeComponent* FadeComponent;
 	UPROPERTY(VisibleAnywhere, Category = UI)
 		class UWidgetComponent* HPBarWidget;
 	UPROPERTY(VisibleAnywhere, Category = UI)
