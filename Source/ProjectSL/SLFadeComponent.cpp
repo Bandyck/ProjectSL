@@ -72,11 +72,9 @@ void USLFadeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void USLFadeComponent::AddObjectsToHide()
 {
 	UGameplayStatics::GetAllActorsOfClass(this, playerClass, characterArray);
-
-	LOG(Warning, TEXT("%d"), characterArray.Num());
+	
 	for (AActor* currentActor : characterArray)
 	{
-		LOG_S(Warning);
 		const FVector traceStart = GEngine->GetFirstLocalPlayerController(GetWorld())->PlayerCameraManager->GetCameraLocation();
 		const FVector traceEnd = currentActor->GetActorLocation();
 		const FRotator traceRot = currentActor->GetActorRotation();
@@ -85,7 +83,6 @@ void USLFadeComponent::AddObjectsToHide()
 
 		if (traceLentgh.Size() < workDistance)
 		{
-			LOG_S(Warning);
 			FCollisionQueryParams traceParams(TEXT("FadeObjectsTrace"), true, GetOwner());
 
 			traceParams.AddIgnoredActors(actorsIgnore);

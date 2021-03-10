@@ -7,11 +7,13 @@
 #include "SLEnemyAIController.h"
 #include "SLEnemyAnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/WidgetComponent.h"
+#include "SLEnemyWidget.h"
 
 
 
 // Sets default values
-ASLEnemy::ASLEnemy()
+ASLEnemy::ASLEnemy() : curHP(0)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -30,7 +32,19 @@ ASLEnemy::ASLEnemy()
 	//}
 	
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("SLCharacter"));
-	
+
+	HPBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/UI/Enemy/UI_HPBar.UI_HPBar_C"));
+	if (UI_HUD.Succeeded())
+	{
+		HPBarWidget->SetWidgetClass(UI_HUD.Class);
+		HPBarWidget->SetDrawSize(FVector2D(120.0f, 40.0f));
+		HPBarWidget->SetReceivesDecals(false);
+		HPBarWidget->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		HPBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
+		HPBarWidget->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	}
+
 	AIControllerClass = ASLEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
@@ -39,13 +53,20 @@ ASLEnemy::ASLEnemy()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 480.0f, 0.0f);
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	
 }
 
 // Called when the game starts or when spawned
 void ASLEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
+	curHP = EnemyData.HP;
+	auto CharacterWidget = Cast<USLEnemyWidget>(HPBarWidget->GetUserWidgetObject());
+	if (nullptr != CharacterWidget)
+	{
+		HPBarWidget->SetRelativeLocation(FVector(0.f, 0.f, GetCapsuleComponent()->GetScaledCapsuleRadius()));
+		CharacterWidget->BindEnemy(this);
+	}
 }
 
 // Called every frame
@@ -104,12 +125,34 @@ void ASLEnemy::Attack()
 	AnimInstance->PlayAttackMontage();
 }
 
+void ASLEnemy::Dead()
+{
+	USLEnemyAnimInstance* AnimInstance = Cast<USLEnemyAnimInstance>(GetMesh()->GetAnimInstance());
+	GetController()->StopMovement();
+	AnimInstance->PlayDeadMontage();
+	SetLifeSpan(2.0f);
+	
+}
+
 
 float ASLEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if(curHP <= 0)
+	{
+		return FinalDamage;
+	}
 	USLEnemyAnimInstance* AnimInstance = Cast<USLEnemyAnimInstance>(GetMesh()->GetAnimInstance());
-	AnimInstance->PlayHitReaction();
 	OnAttackEnd.Broadcast();
+	AnimInstance->PlayHitReaction();
+
+	curHP -= FinalDamage;
+	OnHPChange.Broadcast();
+
+	if(curHP <= 0)
+	{
+		Dead();
+	}
+	
 	return FinalDamage;
 }

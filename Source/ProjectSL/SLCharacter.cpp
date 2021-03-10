@@ -8,6 +8,7 @@
 #include "Components/WidgetComponent.h"
 #include "SLCharacterWidget.h"
 
+
 // Sets default values
 ASLCharacter::ASLCharacter()
 {
@@ -255,7 +256,6 @@ void ASLCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-
 	auto CharacterWidget = Cast<USLCharacterWidget>(HPBarWidget->GetUserWidgetObject());
 	if (nullptr != CharacterWidget)
 	{

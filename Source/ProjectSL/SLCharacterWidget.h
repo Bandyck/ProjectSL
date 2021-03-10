@@ -24,5 +24,5 @@ protected:
 private:
 	TWeakObjectPtr<class USLCharacterStatComponent> CurrentCharacterStat;
 	UPROPERTY()
-		class UProgressBar* HPProgressBar;
+	class UProgressBar* HPProgressBar;
 };
