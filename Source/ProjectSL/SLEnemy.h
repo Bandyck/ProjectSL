@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ProjectSL.h"
 
 #include "Engine/DataTable.h"
 #include "GameFramework/Character.h"
@@ -36,6 +36,7 @@ public:
 
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnHPChangedDelegate);
 
 UCLASS(Blueprintable)
 class PROJECTSL_API ASLEnemy : public ACharacter
@@ -45,7 +46,6 @@ class PROJECTSL_API ASLEnemy : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ASLEnemy();
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -61,6 +61,7 @@ protected:
 
 public:	
 	FOnAttackEndDelegate OnAttackEnd;
+	FOnHPChangedDelegate OnHPChange;
 
 	float GetAttackRange() const { return EnemyData.AttackRange; }
 	void SetAttackRange(float attackRange) { EnemyData.AttackRange = attackRange; }
@@ -71,10 +72,22 @@ public:
 	float GetAttackPower() const { return EnemyData.AttackPower;  }
 
 	float GetAttackComboCount() const { return EnemyData.AttackComboCount; }
+	UFUNCTION()
+	float GetHPRatio() const { 
+		if (EnemyData.HP == 0)
+		{
+			LOG_S(Error);
+			return 0;
+		}
+		return curHP / EnemyData.HP; }
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Type, Meta = (AllowPrivateAccess = true))
 	FSLEnemyData EnemyData;
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Type, Meta = (AllowPrivateAccess = true))
 	uint8 ID;
+	UPROPERTY(VisibleAnywhere, Category = UI, Meta = (AllowPrivateAccess = true))
+	class UWidgetComponent* HPBarWidget;
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
+	float curHP;
 };
