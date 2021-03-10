@@ -12,7 +12,7 @@ USLEnemyAnimInstance::USLEnemyAnimInstance()
 {
 	CurrentPawnSpeed = 0;
 	AttackCount = 0;
-	
+
 	//static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/Blueprints/GreaterSpider_Attack_Montage.GreaterSpider_Attack_Montage"));
 	//if (ATTACK_MONTAGE.Succeeded())
 	//{
@@ -72,6 +72,24 @@ void USLEnemyAnimInstance::PlayHitReaction()
 	}
 }
 
+void USLEnemyAnimInstance::PlayDeadMontage()
+{
+	StopAllMontages(0.1f);
+	StopSlotAnimation();
+	Montage_Play(DeadMontage, 1.0f);
+	DeadMontage->BlendOut = 2.0f;
+	FTimerHandle WaitHandle;
+	float WaitTime = DeadMontage->GetPlayLength() * 0.9f;
+	GetWorld()->GetTimerManager().SetTimer(WaitHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			Montage_Pause();
+		}), WaitTime, false);
+}
+
+float USLEnemyAnimInstance::GetDeadMontageTime()
+{
+	return DeadMontage->GetPlayLength();
+}
 
 void USLEnemyAnimInstance::AnimNotify_AttackHitCheck()
 {

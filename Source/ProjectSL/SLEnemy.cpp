@@ -53,6 +53,7 @@ ASLEnemy::ASLEnemy() : curHP(0)
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 480.0f, 0.0f);
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	
 }
 
 // Called when the game starts or when spawned
@@ -124,16 +125,34 @@ void ASLEnemy::Attack()
 	AnimInstance->PlayAttackMontage();
 }
 
+void ASLEnemy::Dead()
+{
+	USLEnemyAnimInstance* AnimInstance = Cast<USLEnemyAnimInstance>(GetMesh()->GetAnimInstance());
+	GetController()->StopMovement();
+	AnimInstance->PlayDeadMontage();
+	SetLifeSpan(2.0f);
+	
+}
+
 
 float ASLEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if(curHP <= 0)
+	{
+		return FinalDamage;
+	}
 	USLEnemyAnimInstance* AnimInstance = Cast<USLEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	OnAttackEnd.Broadcast();
 	AnimInstance->PlayHitReaction();
 
 	curHP -= FinalDamage;
 	OnHPChange.Broadcast();
+
+	if(curHP <= 0)
+	{
+		Dead();
+	}
 	
 	return FinalDamage;
 }
