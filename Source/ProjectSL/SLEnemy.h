@@ -59,6 +59,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void OnBeginCursorOver(UPrimitiveComponent* PrimitiveComponent);
+	UFUNCTION()
+	void OnEndCursorOver(UPrimitiveComponent* PrimitiveComponent);
 public:	
 	FOnAttackEndDelegate OnAttackEnd;
 	FOnHPChangedDelegate OnHPChange;

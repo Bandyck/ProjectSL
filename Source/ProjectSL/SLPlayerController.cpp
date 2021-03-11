@@ -6,6 +6,7 @@
 ASLPlayerController::ASLPlayerController()
 {
 	bShowMouseCursor = true;
+	bEnableMouseOverEvents = true;
 	//MyCharacter = GetPawn();
 }
 

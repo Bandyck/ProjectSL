@@ -53,7 +53,7 @@ ASLEnemy::ASLEnemy() : curHP(0)
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 480.0f, 0.0f);
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
-	
+
 }
 
 // Called when the game starts or when spawned
@@ -67,6 +67,20 @@ void ASLEnemy::BeginPlay()
 		HPBarWidget->SetRelativeLocation(FVector(0.f, 0.f, GetCapsuleComponent()->GetScaledCapsuleRadius()));
 		CharacterWidget->BindEnemy(this);
 	}
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	GetCapsuleComponent()->OnBeginCursorOver.AddDynamic(this, &ASLEnemy::OnBeginCursorOver);
+	GetCapsuleComponent()->OnEndCursorOver.AddDynamic(this, &ASLEnemy::OnEndCursorOver);
+}
+
+void ASLEnemy::OnBeginCursorOver(UPrimitiveComponent* PrimitiveComponent)
+{
+	GetMesh()->SetRenderCustomDepth(true);
+}
+
+void ASLEnemy::OnEndCursorOver(UPrimitiveComponent* PrimitiveComponent)
+{
+	GetMesh()->SetRenderCustomDepth(false);
 }
 
 // Called every frame
