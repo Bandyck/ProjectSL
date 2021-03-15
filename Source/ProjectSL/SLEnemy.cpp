@@ -44,7 +44,9 @@ ASLEnemy::ASLEnemy() : curHP(0)
 		HPBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
 		HPBarWidget->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 	}
-
+	
+	DeadEffect = LoadObject<UNiagaraSystem>(nullptr, TEXT("/Game/Blueprints/Enemy/Discomposition_Niagara_System.Discomposition_Niagara_System"), nullptr, LOAD_None, nullptr);
+	
 	AIControllerClass = ASLEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
@@ -68,6 +70,8 @@ void ASLEnemy::BeginPlay()
 		CharacterWidget->BindEnemy(this);
 	}
 
+
+	
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetCapsuleComponent()->OnBeginCursorOver.AddDynamic(this, &ASLEnemy::OnBeginCursorOver);
 	GetCapsuleComponent()->OnEndCursorOver.AddDynamic(this, &ASLEnemy::OnEndCursorOver);
@@ -75,6 +79,10 @@ void ASLEnemy::BeginPlay()
 
 void ASLEnemy::OnBeginCursorOver(UPrimitiveComponent* PrimitiveComponent)
 {
+	if(curHP < 1)
+	{
+		return;
+	}
 	GetMesh()->SetRenderCustomDepth(true);
 }
 
@@ -144,8 +152,18 @@ void ASLEnemy::Dead()
 	USLEnemyAnimInstance* AnimInstance = Cast<USLEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	GetController()->StopMovement();
 	AnimInstance->PlayDeadMontage();
-	SetLifeSpan(2.0f);
-	
+	SetLifeSpan(5.0f);
+	HPBarWidget->SetVisibility(false);
+	UNiagaraFunctionLibrary::SpawnSystemAttached(
+		DeadEffect,
+		GetMesh(),
+		FName(TEXT("DeadEffectInstance")),
+		GetActorLocation(),
+		FRotator(1),
+		EAttachLocation::KeepRelativeOffset,
+		false,
+		true,
+		ENCPoolMethod::None);
 }
 
 

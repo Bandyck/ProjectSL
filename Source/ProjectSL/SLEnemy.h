@@ -6,6 +6,8 @@
 
 #include "Engine/DataTable.h"
 #include "GameFramework/Character.h"
+#include "Niagara/Public/NiagaraComponent.h"
+#include "Niagara/Public/NiagaraFunctionLibrary.h"
 #include "SLEnemy.generated.h"
 
 USTRUCT(BlueprintType)
@@ -90,6 +92,8 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Type, Meta = (AllowPrivateAccess = true))
 	uint8 ID;
+	UPROPERTY(VisibleAnywhere, Category = Effect, Meta = (AllowPrivateAccess = true))
+	UNiagaraSystem* DeadEffect;
 	UPROPERTY(VisibleAnywhere, Category = UI, Meta = (AllowPrivateAccess = true))
 	class UWidgetComponent* HPBarWidget;
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))

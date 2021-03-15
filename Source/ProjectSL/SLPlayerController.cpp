@@ -2,6 +2,7 @@
 
 
 #include "SLPlayerController.h"
+#include "SLCharacter.h"
 
 ASLPlayerController::ASLPlayerController()
 {
@@ -48,7 +49,13 @@ void ASLPlayerController::SetNewDestination(const FVector DestLocation)
 	{
 		//float const Distance = FVector::Dist(DestLocation, MyCharacter->GetActorLocation());
 		float const Distance = FVector::Dist(DestLocation, AcknowledgedPawn->GetActorLocation());
-		if (Distance > 120.0f)
+		ASLCharacter* ACharacter = Cast<ASLCharacter>(AcknowledgedPawn);
+		if(ACharacter == nullptr)
+		{
+			LOG_S(Error);
+			return;
+		}
+		if (Distance > 120.0f && ACharacter->IsMovable())
 		{
 			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
 		}

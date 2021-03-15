@@ -7,6 +7,7 @@
 #include "SLEnemy.h"
 #include "SLEnemyAIController.h"
 #include "DrawDebugHelpers.h"
+#include "SLCharacter.h"
 
 USLEnemyAnimInstance::USLEnemyAnimInstance()
 {
@@ -95,10 +96,10 @@ void USLEnemyAnimInstance::AnimNotify_AttackHitCheck()
 {
 	LOG(Warning, TEXT("%s"), *AttackMontage->GetName());
 	ASLEnemy* Enemy = Cast<ASLEnemy>(TryGetPawnOwner());
-	FHitResult HitResult;
+	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params(NAME_None, false, Enemy);
-	bool bResult = GetWorld()->SweepSingleByChannel(
-		HitResult,
+	bool bResult = GetWorld()->SweepMultiByChannel(
+		HitResults,
 		Enemy->GetActorLocation(),
 		Enemy->GetActorLocation() + Enemy->GetActorForwardVector() * Enemy->GetAttackRange(),
 		FQuat::Identity,
@@ -128,31 +129,28 @@ void USLEnemyAnimInstance::AnimNotify_AttackHitCheck()
 
 	if (bResult)
 	{
-		if (HitResult.Actor.IsValid())
+		for (auto HitResult : HitResults)
 		{
-			FDamageEvent DamageEvent;
-			HitResult.Actor->TakeDamage(10.0f, DamageEvent, Enemy->GetController(), Enemy);
-			AttackCount++;
-			if(AttackCount == Enemy->GetAttackComboCount())
+			ASLCharacter* Character = Cast<ASLCharacter>(HitResult.Actor);
+			if (Character != nullptr)
 			{
-				AttackCount = 0;
-				Montage_Stop(1.0f, AttackMontage);
-				Enemy->OnAttackEnd.Broadcast();
+				FDamageEvent DamageEvent;
+				HitResult.Actor->TakeDamage(Enemy->GetAttackPower(), DamageEvent, Enemy->GetController(), Enemy);
+				AttackCount++;
+				if (AttackCount == Enemy->GetAttackComboCount())
+				{
+					AttackCount = 0;
+					Montage_Stop(1.0f, AttackMontage);
+					Enemy->OnAttackEnd.Broadcast();
+				}
+				return;
 			}
 		}
-		else
-		{
-			AttackCount = 0;
-			Montage_Stop(1.0f, AttackMontage);
-			Enemy->OnAttackEnd.Broadcast();
-		}
 	}
-	else
-	{
-		AttackCount = 0;
-		Montage_Stop(1.0f, AttackMontage);
-		Enemy->OnAttackEnd.Broadcast();
-	}
+	AttackCount = 0;
+	Montage_Stop(1.0f, AttackMontage);
+	Enemy->OnAttackEnd.Broadcast();
+
 }
 
 //void USLEnemyAnimInstance::AnimNotify_HitStart()

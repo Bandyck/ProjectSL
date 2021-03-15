@@ -7,6 +7,7 @@
 #include "DrawDebugHelpers.h"
 #include "Components/WidgetComponent.h"
 #include "SLCharacterWidget.h"
+#include "SLEnemy.h"
 
 
 // Sets default values
@@ -193,6 +194,7 @@ void ASLCharacter::OnSkill_F_MontageEnded(UAnimMontage* Montage, bool bInterrupt
 
 void ASLCharacter::AttackStartComboState()
 {
+	GetController()->StopMovement();
 	LOG(Warning, TEXT("%d"), CurrentCombo);
 	CanNextCombo = true;
 	IsComboInputOn = false;
@@ -209,10 +211,10 @@ void ASLCharacter::AttackEndComboState()
 
 void ASLCharacter::AttackCheck()
 {
-	FHitResult HitResult;
+	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params(NAME_None, false, this);
-	bool bResult = GetWorld()->SweepSingleByChannel(
-		HitResult,
+	bool bResult = GetWorld()->SweepMultiByChannel(
+		HitResults,
 		GetActorLocation(),
 		GetActorLocation() + GetActorForwardVector() * AttackRange,
 		FQuat::Identity,
@@ -242,11 +244,14 @@ void ASLCharacter::AttackCheck()
 
 	if (bResult)
 	{
-		if (HitResult.Actor.IsValid())
+		FDamageEvent DamageEvent;
+		for (auto HitResult : HitResults)
 		{
-			FDamageEvent DamegeEvent;
-			LOG_S(Warning);
-			HitResult.Actor->TakeDamage(CharacterStat->GetAttack(), DamegeEvent, GetController(), this);
+			ASLEnemy* Enemy = Cast<ASLEnemy>(HitResult.Actor);
+			if(Enemy != nullptr)
+			{
+				HitResult.Actor->TakeDamage(CharacterStat->GetAttack(), DamageEvent, GetController(), this);
+			}
 		}
 	}
 }

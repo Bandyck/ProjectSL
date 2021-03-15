@@ -5,6 +5,8 @@
 #include "ProjectSL.h"
 #include "SLFadeComponent.h"
 #include "GameFramework/Character.h"
+#include "Niagara/Public/NiagaraComponent.h"
+#include "Niagara/Public/NiagaraFunctionLibrary.h"
 #include "SLCharacter.generated.h"
 
 UCLASS()
@@ -67,7 +69,21 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = UI)
 		class UWidgetComponent* Skill_Quickslot;
 
+	bool IsMovable()
+	{
+		if(IsAttacking)
+		{
+			return false;
+		}
+		if(IsSkilling)
+		{
+			return false;
+		}
+		return true;
+	}
 private:
+	UNiagaraSystem* WeakAttackEffect;
+	UNiagaraSystem* PowerAttackEffect;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
