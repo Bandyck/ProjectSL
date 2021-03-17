@@ -9,7 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
 #include "SLEnemyWidget.h"
-
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -177,7 +177,8 @@ float ASLEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	USLEnemyAnimInstance* AnimInstance = Cast<USLEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	OnAttackEnd.Broadcast();
 	AnimInstance->PlayHitReaction();
-
+	this->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), DamageCauser->GetActorLocation()));
+	
 	curHP -= FinalDamage;
 	OnHPChange.Broadcast();
 

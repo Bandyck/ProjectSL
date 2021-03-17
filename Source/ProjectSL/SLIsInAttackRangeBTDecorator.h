@@ -16,7 +16,9 @@ class PROJECTSL_API USLIsInAttackRangeBTDecorator : public UBTDecorator
 
 public:
 	USLIsInAttackRangeBTDecorator();
-
 protected:
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
+public :
+
+protected:
 };

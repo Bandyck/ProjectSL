@@ -11,6 +11,7 @@ USLDetectBTService::USLDetectBTService()
 {
 	NodeName = TEXT("Detect");
 	Interval = 1.0f;
+	DetectDistance = 600.f;
 }
 
 void USLDetectBTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -21,12 +22,11 @@ void USLDetectBTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	CHECK(ControllingPawn != nullptr);
 	UWorld* World = ControllingPawn->GetWorld();
 	FVector Center = ControllingPawn->GetActorLocation();
-	float DetectRadius = 600.0f;
 
 	CHECK(World != nullptr);
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams CollisionQueryParams(NAME_None, false, ControllingPawn);
-	bool bResult = World->OverlapMultiByChannel(OverlapResults, Center, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeSphere(DetectRadius), CollisionQueryParams);
+	bool bResult = World->OverlapMultiByChannel(OverlapResults, Center, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeSphere(DetectDistance), CollisionQueryParams);
 
 	if(bResult)
 	{
@@ -36,18 +36,14 @@ void USLDetectBTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 			if(Character && Character->GetController()->IsPlayerController())
 			{
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(ASLEnemyAIController::TargetKey, Character);
-				DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Green, false, 0.2f);
+				/*DrawDebugSphere(World, Center, DetectDistance, 16, FColor::Green, false, 0.2f);
 				DrawDebugPoint(World, Character->GetActorLocation(), 10.0f, FColor::Blue, false, 0.2f);
-				DrawDebugLine(World, ControllingPawn->GetActorLocation(), Character->GetActorLocation(), FColor::Blue, false, 0.2f);
-				
+				DrawDebugLine(World, ControllingPawn->GetActorLocation(), Character->GetActorLocation(), FColor::Blue, false, 0.2f);*/
 				return;
 			}
 		}
 	}
-	else
-	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsObject(ASLEnemyAIController::TargetKey, nullptr);
-	}
+	OwnerComp.GetBlackboardComponent()->SetValueAsObject(ASLEnemyAIController::TargetKey, nullptr);
 	
-	DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Red, false, 0.2f);
+	DrawDebugSphere(World, Center, DetectDistance, 16, FColor::Red, false, 0.2f);
 }

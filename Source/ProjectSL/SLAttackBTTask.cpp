@@ -3,6 +3,7 @@
 
 #include "SLAttackBTTask.h"
 #include "SLEnemy.h"
+#include "SLSpiderBoss.h"
 #include "SLEnemyAIController.h"
 
 USLAttackBTTask::USLAttackBTTask()
@@ -17,19 +18,19 @@ EBTNodeResult::Type USLAttackBTTask::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	ASLEnemy* Enemy = Cast<ASLEnemy>(OwnerComp.GetAIOwner()->GetPawn());
-	if (Enemy == nullptr)
+	if (Enemy != nullptr)
 	{
-		LOG_S(Error);
-		return EBTNodeResult::Failed;
+		Enemy->Attack();
+		Enemy->OnAttackEnd.AddLambda([this]()->void
+			{
+				IsAttacking = false;
+			});
+		IsAttacking = true;
+		return EBTNodeResult::InProgress;
 	}
 
-	Enemy->Attack();
-	IsAttacking = true;
-	Enemy->OnAttackEnd.AddLambda([this]()->void
-		{
-			IsAttacking = false;
-		});
-	return EBTNodeResult::InProgress;
+	ASLSpiderBoss* SpiderBoss = Cast<ASLSpiderBoss>(OwnerComp.GetAIOwner()->GetPawn());
+	return EBTNodeResult::Failed;
 }
 
 

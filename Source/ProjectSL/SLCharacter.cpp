@@ -8,6 +8,7 @@
 #include "Components/WidgetComponent.h"
 #include "SLCharacterWidget.h"
 #include "SLEnemy.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -88,6 +89,9 @@ ASLCharacter::ASLCharacter()
 	Skill_Quickslot->SetRelativeLocation(FVector(0.0f, 0.0f, -720.0f));
 	Skill_Quickslot->SetWidgetSpace(EWidgetSpace::Screen);
 
+
+	HitEffect = LoadObject<UNiagaraSystem>(nullptr, TEXT("/Game/Hack_And_Slash_FX/VFX_Niagara/Impacts/NS_Fire_Slash_Impact.NS_Fire_Slash_Impact"), nullptr, LOAD_None, nullptr);
+	
 	GetMesh()->SetReceivesDecals(false);
 	GetCapsuleComponent()->SetHiddenInGame(false);
 }
@@ -215,7 +219,7 @@ void ASLCharacter::AttackCheck()
 	FCollisionQueryParams Params(NAME_None, false, this);
 	bool bResult = GetWorld()->SweepMultiByChannel(
 		HitResults,
-		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * AttackRange,
 		GetActorLocation() + GetActorForwardVector() * AttackRange,
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel2,
@@ -223,33 +227,46 @@ void ASLCharacter::AttackCheck()
 		Params
 	);
 
-#if ENABLE_DRAW_DEBUG
-	FVector TraceVec = GetActorForwardVector() * AttackRange;
-	FVector Center = GetActorLocation() + TraceVec * 0.5f;
-	float HalfHeight = AttackRange * 0.5f + AttackRadius;
-	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
-	FColor DrawColor = bResult ? FColor::Red : FColor::Green;
-	float DebugLifeTime = 3.0f;
-
-	DrawDebugCapsule(GetWorld(),
-		Center,
-		HalfHeight,
-		AttackRadius,
-		CapsuleRot,
-		DrawColor,
-		false,
-		DebugLifeTime);
-
-#endif // ENABLE_DRAW_DEBUG
-
+//#if ENABLE_DRAW_DEBUG
+//	FVector TraceVec = GetActorForwardVector() * AttackRange;
+//	FVector Center = GetActorLocation() + TraceVec * 0.5f;
+//	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+//	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+//	FColor DrawColor = bResult ? FColor::Red : FColor::Green;
+//	float DebugLifeTime = 3.0f;
+//
+//
+//	DrawDebugSphere(GetWorld(),
+//		Center,
+//		HalfHeight,
+//		4,
+//		DrawColor,
+//		false,
+//		DebugLifeTime);
+//	
+//	/*DrawDebugCapsule(GetWorld(),
+//		Center,
+//		HalfHeight,
+//		AttackRadius,
+//		CapsuleRot,
+//		DrawColor,
+//		false,
+//		DebugLifeTime);*/
+//
+//#endif // ENABLE_DRAW_DEBUG
+	
 	if (bResult)
 	{
 		FDamageEvent DamageEvent;
 		for (auto HitResult : HitResults)
 		{
 			ASLEnemy* Enemy = Cast<ASLEnemy>(HitResult.Actor);
+			LOG(Warning, TEXT(" penet : %f , distance : %f"), HitResult.PenetrationDepth, HitResult.Distance);
+			FVector dir = HitResult.Actor->GetActorLocation() - GetActorLocation();
+			dir.Normalize();
 			if(Enemy != nullptr)
 			{
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect,HitResult.ImpactPoint, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), HitResult.ImpactPoint).Add(0, 90, 0));
 				HitResult.Actor->TakeDamage(CharacterStat->GetAttack(), DamageEvent, GetController(), this);
 			}
 		}

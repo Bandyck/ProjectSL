@@ -9,7 +9,7 @@
 
 USLSpiderBossAnimInstance::USLSpiderBossAnimInstance()
 {
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AnimMontage(TEXT("/Game/Blueprints/SpiderBoss/AnimMontage/JumpAttack_Montage.JumpAttack_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AnimMontage(TEXT("/Game/Blueprints/SpiderBoss/AnimMontage/Archanid_Jump_Montage.Archanid_Jump_Montage"));
 	if (AnimMontage.Succeeded())
 	{
 		JumpAttackMontage = AnimMontage.Object;
@@ -103,3 +103,13 @@ void USLSpiderBossAnimInstance::AnimNotify_DropRock()
 
 	UGameplayStatics::SpawnEmitterAtLocation(GetOwningActor()->GetWorld(), Cast<ASLSpiderBoss>(TryGetPawnOwner())->GetRockDropParticle(), JumpAttackTask->GetTargetPos(), FRotator::ZeroRotator);
 }
+
+void USLSpiderBossAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+{
+	APawn* Pawn = TryGetPawnOwner();
+
+	if (!::IsValid(Pawn)) return;
+
+	CurrentPawnSpeed = Pawn->GetVelocity().Size();
+}
+

@@ -82,8 +82,8 @@ public:
 		return true;
 	}
 private:
-	UNiagaraSystem* WeakAttackEffect;
-	UNiagaraSystem* PowerAttackEffect;
+	UPROPERTY(VisibleAnywhere, Category = Effect, Meta = (AllowPrivateAccess = true))
+	UNiagaraSystem* HitEffect;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
