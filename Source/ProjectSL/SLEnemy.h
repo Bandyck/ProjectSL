@@ -79,13 +79,7 @@ public:
 
 	float GetAttackComboCount() const { return EnemyData.AttackComboCount; }
 	UFUNCTION()
-	float GetHPRatio() const { 
-		if (EnemyData.HP == 0)
-		{
-			LOG_S(Error);
-			return 0;
-		}
-		return curHP / EnemyData.HP; }
+	float GetHPRatio() const {  if (EnemyData.HP == 0) { LOG_S(Error); return 0; } return curHP / EnemyData.HP; }
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Type, Meta = (AllowPrivateAccess = true))
 	FSLEnemyData EnemyData;

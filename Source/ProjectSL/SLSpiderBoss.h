@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "SLSpiderBoss.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnJumpAttackEndDelegate);
 
 UCLASS()
 class PROJECTSL_API UJumpAttackCameraShake : public UCameraShake
@@ -27,6 +26,10 @@ public :
 		RotOscillation.Yaw.Frequency = 25.0f;
 	}
 };
+
+
+DECLARE_MULTICAST_DELEGATE(FOnJumpAttackEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnBaseAttackEndDelegate);
 
 UCLASS()
 class PROJECTSL_API ASLSpiderBoss : public ACharacter
@@ -49,7 +52,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void JumpAttack();
-
+	void BaseAttack();
+	void RangeAttack();
 	float GetJumpAttackRange() const { return JumpAttackRange; }
 	void SetJumpAttackRange(float newJumpAttackRange) { JumpAttackRange = newJumpAttackRange; }
 
@@ -57,10 +61,12 @@ public:
 	AActor* GetCircleProgressIndicator() const { return CircleProgressIndicator; }
 	UParticleSystem* GetRockDropParticle() const { return RockDropParticle; }
 	UParticleSystem* GetLandDestroyParticle() const { return LandDestroyParticle; }
+	void CameraShake();
 private:
 	AActor* MakeIndicator(FString bluePrintPath);
 public :
 	FOnJumpAttackEndDelegate JumpAttackEnd;
+	FOnBaseAttackEndDelegate BaseAttackEnd;
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	float JumpAttackRange;
@@ -74,5 +80,6 @@ protected:
 	UParticleSystem* LandDestroyParticle;
 	UPROPERTY(EditDefaultsOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShake> JumpAttackCameraShakeClass = UJumpAttackCameraShake::StaticClass();
+
 private :
 };

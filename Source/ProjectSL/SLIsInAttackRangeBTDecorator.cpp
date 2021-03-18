@@ -15,21 +15,18 @@ USLIsInAttackRangeBTDecorator::USLIsInAttackRangeBTDecorator()
 bool USLIsInAttackRangeBTDecorator::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
 	bool bResult = Super::CalculateRawConditionValue(OwnerComp, NodeMemory);
-	float AttackRange = 300.f;
+	float AttackRange = 600.f;
 	ASLEnemy* ControllingPawn = Cast<ASLEnemy>(OwnerComp.GetAIOwner()->GetPawn());
 	if(ControllingPawn != nullptr)
 	{
 		AttackRange = ControllingPawn->GetAttackRange();
 	}
-	else
-	{
-		LOG_S(Warning);
-	}
 	//CHECK(ControllingPawn != nullptr);
-
 	ASLCharacter* Target = Cast<ASLCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ASLEnemyAIController::TargetKey));
 	//CHECK(Target != nullptr);
 
+	LOG(Warning, TEXT("%f"), Target->GetDistanceTo(OwnerComp.GetAIOwner()->GetPawn()));
+	
 	bResult = (Target->GetDistanceTo(OwnerComp.GetAIOwner()->GetPawn()) <= AttackRange);
 	return bResult;
 }

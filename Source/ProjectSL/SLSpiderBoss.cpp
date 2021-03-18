@@ -16,8 +16,7 @@ ASLSpiderBoss::ASLSpiderBoss()
 	{
 		RockDropParticle = ROCKDROP_PARTICLE.Object;
 	}
-
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> LANDDESTROY_PARTICLE(TEXT("/Game/Blueprints/SpiderBoss/LandDestroyParticle.LandDestroyParticle"));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> LANDDESTROY_PARTICLE(TEXT("/Game/InfinityBladeEffects/Effects/FX_Skill_RockBurst/P_RBurst_Default_Burst_Area_01.P_RBurst_Default_Burst_Area_01"));
 	if (ROCKDROP_PARTICLE.Succeeded())
 	{
 		LandDestroyParticle = LANDDESTROY_PARTICLE.Object;
@@ -98,6 +97,29 @@ void ASLSpiderBoss::JumpAttack()
 	AnimInstance->JumpAttackStart();
 }
 
+void ASLSpiderBoss::BaseAttack()
+{
+	USLSpiderBossAnimInstance* AnimInstance = Cast<USLSpiderBossAnimInstance>(GetMesh()->GetAnimInstance());
+	if (AnimInstance == nullptr)
+	{
+		LOG_S(Error);
+		return;
+	}
+	AnimInstance->BaseAttackPlay();
+}
+
+void ASLSpiderBoss::RangeAttack()
+{
+	USLSpiderBossAnimInstance* AnimInstance = Cast<USLSpiderBossAnimInstance>(GetMesh()->GetAnimInstance());
+	if (AnimInstance == nullptr)
+	{
+		LOG_S(Error);
+		return;
+	}
+	AnimInstance->RangeAttackPlay();
+}
+
+
 AActor* ASLSpiderBoss::MakeIndicator(FString bluePrintPath)
 {
 	AActor* newIndicator = nullptr;
@@ -125,4 +147,9 @@ AActor* ASLSpiderBoss::MakeIndicator(FString bluePrintPath)
 	newIndicator->SetActorHiddenInGame(true);
 	newIndicator->SetActorTickEnabled(false);
 	return newIndicator;
+}
+
+void ASLSpiderBoss::CameraShake()
+{
+	GetWorld()->GetFirstPlayerController()->ClientPlayCameraShake(JumpAttackCameraShakeClass);
 }

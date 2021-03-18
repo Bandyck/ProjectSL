@@ -69,8 +69,6 @@ void ASLEnemy::BeginPlay()
 		HPBarWidget->SetRelativeLocation(FVector(0.f, 0.f, GetCapsuleComponent()->GetScaledCapsuleRadius()));
 		CharacterWidget->BindEnemy(this);
 	}
-
-
 	
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetCapsuleComponent()->OnBeginCursorOver.AddDynamic(this, &ASLEnemy::OnBeginCursorOver);

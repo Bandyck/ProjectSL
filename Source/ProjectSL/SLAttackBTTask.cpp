@@ -4,7 +4,9 @@
 #include "SLAttackBTTask.h"
 #include "SLEnemy.h"
 #include "SLSpiderBoss.h"
+#include "SLSpiderBossAnimInstance.h"
 #include "SLEnemyAIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 USLAttackBTTask::USLAttackBTTask()
 {
@@ -16,7 +18,7 @@ USLAttackBTTask::USLAttackBTTask()
 EBTNodeResult::Type USLAttackBTTask::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
-
+	
 	ASLEnemy* Enemy = Cast<ASLEnemy>(OwnerComp.GetAIOwner()->GetPawn());
 	if (Enemy != nullptr)
 	{
@@ -30,6 +32,33 @@ EBTNodeResult::Type USLAttackBTTask::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	}
 
 	ASLSpiderBoss* SpiderBoss = Cast<ASLSpiderBoss>(OwnerComp.GetAIOwner()->GetPawn());
+	if(SpiderBoss != nullptr)
+	{
+		USLSpiderBossAnimInstance* SpiderBossAnimInstance = Cast<USLSpiderBossAnimInstance>(SpiderBoss->GetMesh()->GetAnimInstance());
+		SpiderBossAnimInstance->SetCurrentPawnTurnSpeed(0);
+		int32 attackType = OwnerComp.GetBlackboardComponent()->GetValueAsInt("AttackType");
+		
+		switch (attackType)
+		{
+			case 0 :
+				{
+					SpiderBoss->BaseAttack();
+				}
+			break;
+			case 1 :
+				{
+					SpiderBoss->RangeAttack();
+				}
+			break;
+		}
+		SpiderBoss->BaseAttackEnd.AddLambda([this]()->void
+			{
+				IsAttacking = false;
+			});
+		IsAttacking = true;
+		return EBTNodeResult::InProgress;
+	}
+	
 	return EBTNodeResult::Failed;
 }
 
