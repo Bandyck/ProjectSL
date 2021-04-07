@@ -78,9 +78,8 @@ void USLEnemyAnimInstance::PlayDeadMontage()
 	StopAllMontages(0.1f);
 	StopSlotAnimation();
 	Montage_Play(DeadMontage, 1.0f);
-	DeadMontage->BlendOut = 2.0f;
 	FTimerHandle WaitHandle;
-	float WaitTime = DeadMontage->GetPlayLength() * 0.9f;
+	float WaitTime = DeadMontage->GetPlayLength() * 0.95f;
 	GetWorld()->GetTimerManager().SetTimer(WaitHandle, FTimerDelegate::CreateLambda([&]()
 		{
 			Montage_Pause();
@@ -174,7 +173,6 @@ void USLEnemyAnimInstance::AnimNotify_AttackHitCheck()
 
 void USLEnemyAnimInstance::AnimNotify_HitEnd()
 {
-	LOG_S(Error);
 	ASLEnemy* Enemy = Cast<ASLEnemy>(TryGetPawnOwner());
 	ASLEnemyAIController* AIController = Cast<class ASLEnemyAIController>(Enemy->GetController());
 	if (AIController != nullptr)

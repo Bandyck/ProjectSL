@@ -50,6 +50,11 @@ EBTNodeResult::Type USLAttackBTTask::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 					SpiderBoss->RangeAttack();
 				}
 			break;
+			case 2 :
+				{
+					SpiderBoss->BreathAttack();
+				}
+			break;
 		}
 		SpiderBoss->BaseAttackEnd.AddLambda([this]()->void
 			{

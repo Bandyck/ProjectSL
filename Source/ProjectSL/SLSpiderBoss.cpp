@@ -3,25 +3,65 @@
 
 #include "SLSpiderBoss.h"
 #include "SLSpiderBossAnimInstance.h"
+#include "SLEnemyWidget.h"
 
 // Sets default values
 ASLSpiderBoss::ASLSpiderBoss()
+	: TornadoActor(nullptr)
+	, MaxHP(400)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	JumpAttackRange = 600.0f;
 	
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> ROCKDROP_PARTICLE(TEXT("/Game/Blueprints/SpiderBoss/RockDropParticle.RockDropParticle"));
+	/*static ConstructorHelpers::FObjectFinder<UParticleSystem> ROCKDROP_PARTICLE(TEXT("/Game/Blueprints/SpiderBoss/RockDropParticle.RockDropParticle"));
 	if (ROCKDROP_PARTICLE.Succeeded())
 	{
 		RockDropParticle = ROCKDROP_PARTICLE.Object;
 	}
+	*/
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> LANDDESTROY_PARTICLE(TEXT("/Game/InfinityBladeEffects/Effects/FX_Skill_RockBurst/P_RBurst_Default_Burst_Area_01.P_RBurst_Default_Burst_Area_01"));
-	if (ROCKDROP_PARTICLE.Succeeded())
+	if (LANDDESTROY_PARTICLE.Succeeded())
 	{
 		LandDestroyParticle = LANDDESTROY_PARTICLE.Object;
 	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> BOSS_WIDGET(TEXT("/Game/UI/Enemy/UI_HPBar_Boss"));
+	if (BOSS_WIDGET.Succeeded())
+	{
+		BossWidgetClass = BOSS_WIDGET.Class;
+	}
+	else
+	{
+		BossWidgetClass = nullptr;
+	}
+	static ConstructorHelpers::FObjectFinder<UClass> TORNADO_BP(TEXT("Class'/Game/Blueprints/SpiderBoss/SLTornadoProjectile.SLTornadoProjectile_C'"));
+	if(TORNADO_BP.Object != nullptr)
+	{
+		TornadoActor2 = TORNADO_BP.Object;
+		if(TornadoActor2 == nullptr)
+		{
+			LOG_S(Error);
+		}
+	}
+	else
+	{
+		LOG_S(Error);
+	}
 
+	static ConstructorHelpers::FObjectFinder<UClass> BREATH_ATTACK_BP(TEXT("Class'/Game/Blueprints/SpiderBoss/SLBreathAttack.SLBreathAttack_C'"));
+	if (BREATH_ATTACK_BP.Object != nullptr)
+	{
+		BreathAttack2 = BREATH_ATTACK_BP.Object;
+		if (BreathAttack2 == nullptr)
+		{
+			LOG_S(Error);
+		}
+	}
+	else
+	{
+		LOG_S(Error);
+	}
+	
 	/*JumpAttackCameraShake = UCameraShake::StaticClass()->GetDefaultObject<UCameraShake>();
 	
 	JumpAttackCameraShake->OscillationDuration = 0.8f;
@@ -39,6 +79,14 @@ ASLSpiderBoss::ASLSpiderBoss()
 void ASLSpiderBoss::BeginPlay()
 {
 	Super::BeginPlay();
+	if(BossWidgetClass != nullptr)
+	{
+		BossWidget = CreateWidget<UUserWidget>(GetWorld(), this->BossWidgetClass);
+		BossWidget->AddToViewport();
+		Cast<USLEnemyWidget>(BossWidget)->BindBoss(this);
+	}
+
+	CurrentHP = MaxHP;
 	//CircleIndicator = GetWorld()->SpawnActor(CircleIndicator->StaticClass());
 	/*UObject* SpawnActor = Cast<UObject>(StaticLoadObject(UObject::StaticClass(), NULL, TEXT("/Game/Blueprints/SpiderBoss/CircleIndicatorDecal.CircleIndicatorDecal")));
 
@@ -63,13 +111,13 @@ void ASLSpiderBoss::BeginPlay()
 	CircleIndicator = World->SpawnActor<AActor>(GeneratedBP->GeneratedClass, SpawnParams);
 	CircleIndicator->SetActorHiddenInGame(true);
 	CircleIndicator->SetActorTickEnabled(false);*/
-
+	
 	JumpAttackEnd.AddLambda([this]()->void{
 		GetWorld()->GetFirstPlayerController()->ClientPlayCameraShake(JumpAttackCameraShakeClass);
 	});
 	
-	CircleIndicator = MakeIndicator("/Game/Blueprints/SpiderBoss/CircleIndicatorDecal.CircleIndicatorDecal");
-	CircleProgressIndicator = MakeIndicator("/Game/Blueprints/SpiderBoss/CircleProgressIndicatorDecal.CircleProgressIndicatorDecal");
+	/*CircleIndicator = MakeIndicator("/Game/Blueprints/SpiderBoss/CircleIndicatorDecal.CircleIndicatorDecal");
+	CircleProgressIndicator = MakeIndicator("/Game/Blueprints/SpiderBoss/CircleProgressIndicatorDecal.CircleProgressIndicatorDecal");*/
 }
 
 // Called every frame
@@ -85,6 +133,28 @@ void ASLSpiderBoss::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+
+float ASLSpiderBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if (CurrentHP <= 0)
+	{
+		return 0;
+	}
+	CurrentHP -= FinalDamage;
+	HPChanged.Broadcast();
+
+	if(CurrentHP <= 0)
+	{
+		BossWidget->Visibility = ESlateVisibility::Hidden;
+		GetController()->UnPossess();
+		USLSpiderBossAnimInstance* AnimInstance = Cast<USLSpiderBossAnimInstance>(GetMesh()->GetAnimInstance());
+		AnimInstance->DeadMontagePlay();
+	}
+	
+	return FinalDamage;
+}
+
 
 void ASLSpiderBoss::JumpAttack()
 {
@@ -117,6 +187,17 @@ void ASLSpiderBoss::RangeAttack()
 		return;
 	}
 	AnimInstance->RangeAttackPlay();
+}
+
+void ASLSpiderBoss::BreathAttack()
+{
+	USLSpiderBossAnimInstance* AnimInstance = Cast<USLSpiderBossAnimInstance>(GetMesh()->GetAnimInstance());
+	if (AnimInstance == nullptr)
+	{
+		LOG_S(Error);
+		return;
+	}
+	AnimInstance->BreathAttackPlay();
 }
 
 

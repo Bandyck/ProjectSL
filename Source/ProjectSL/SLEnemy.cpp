@@ -32,20 +32,27 @@ ASLEnemy::ASLEnemy() : curHP(0)
 	//}
 	
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("SLCharacter"));
+	GetCapsuleComponent()->SetHiddenInGame(true);
 
 	HPBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
 	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/UI/Enemy/UI_HPBar.UI_HPBar_C"));
+	
 	if (UI_HUD.Succeeded())
 	{
 		HPBarWidget->SetWidgetClass(UI_HUD.Class);
-		HPBarWidget->SetDrawSize(FVector2D(120.0f, 40.0f));
+		HPBarWidget->SetDrawSize(FVector2D(90.0f, 30.0f));
 		HPBarWidget->SetReceivesDecals(false);
-		HPBarWidget->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		//HPBarWidget->SetRelativeLocation(FVector(0.0f, 0.0f, -30.0f));
 		HPBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
-		HPBarWidget->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+		HPBarWidget->SetupAttachment(RootComponent);
+		//HPBarWidget->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 	
-	DeadEffect = LoadObject<UNiagaraSystem>(nullptr, TEXT("/Game/Blueprints/Enemy/Discomposition_Niagara_System.Discomposition_Niagara_System"), nullptr, LOAD_None, nullptr);
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DEAD_EFFECT(TEXT("/Game/Blueprints/Enemy/Discomposition_Niagara_System.Discomposition_Niagara_System"));
+	if(DEAD_EFFECT.Succeeded())
+	{
+		DeadEffect = DEAD_EFFECT.Object;
+	}
 	
 	AIControllerClass = ASLEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -55,22 +62,26 @@ ASLEnemy::ASLEnemy() : curHP(0)
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 480.0f, 0.0f);
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
-
+	/*GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);*/
+	/*GetMesh()->OnBeginCursorOver.AddDynamic(this, &ASLEnemy::OnBeginCursorOver);
+	GetMesh()->OnEndCursorOver.AddDynamic(this, &ASLEnemy::OnEndCursorOver);*/
 }
 
 // Called when the game starts or when spawned
 void ASLEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//DeadEffect = Cast<UNiagaraSystem>(StaticLoadObject(UNiagaraSystem::StaticClass(), nullptr, TEXT("/Game/Blueprints/Enemy/Discomposition_Niagara_System.Discomposition_Niagara_System")));
+	//DeadEffect = LoadObject<UNiagaraSystem>(nullptr, TEXT("/Game/Blueprints/Enemy/Discomposition_Niagara_System.Discomposition_Niagara_System"), nullptr, LOAD_None, nullptr);
 	curHP = EnemyData.HP;
 	auto CharacterWidget = Cast<USLEnemyWidget>(HPBarWidget->GetUserWidgetObject());
 	if (nullptr != CharacterWidget)
 	{
-		HPBarWidget->SetRelativeLocation(FVector(0.f, 0.f, GetCapsuleComponent()->GetScaledCapsuleRadius()));
+		//HPBarWidget->SetWorldLocation(FVector::ZeroVector);
 		CharacterWidget->BindEnemy(this);
 	}
-	
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetCapsuleComponent()->OnBeginCursorOver.AddDynamic(this, &ASLEnemy::OnBeginCursorOver);
 	GetCapsuleComponent()->OnEndCursorOver.AddDynamic(this, &ASLEnemy::OnEndCursorOver);
 }
@@ -94,6 +105,17 @@ void ASLEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	/*FHitResult HitResult;
+	GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECC_Visibility, true, HitResult);
+
+	if(HitResult.IsValidBlockingHit() && HitResult.GetActor() == this)
+	{
+		OnBeginCursorOver(nullptr);
+	}
+	else
+	{
+		OnEndCursorOver(nullptr);
+	}*/
 }
 
 // Called to bind functionality to input
@@ -103,6 +125,7 @@ void ASLEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+#if WITH_EDITOR
 void ASLEnemy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -131,7 +154,9 @@ void ASLEnemy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEven
 
 	this->EnemyData = *EnemyDataInDT;
 	GetCharacterMovement()->MaxWalkSpeed = this->EnemyData.WalkSpeed;
+
 }
+#endif
 
 
 void ASLEnemy::Attack()

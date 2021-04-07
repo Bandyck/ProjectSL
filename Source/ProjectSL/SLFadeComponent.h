@@ -27,14 +27,18 @@ struct FFadeObjStruct
 	UPROPERTY()
 		bool bToHide;
 
+	UPROPERTY()
+		bool bIsPath;
+
 	void NewElement(UPrimitiveComponent* newComponent, TArray<UMaterialInterface*> newBaseMat,
-		TArray<UMaterialInstanceDynamic*> newMID, float currentFade, bool bHide)
+		TArray<UMaterialInstanceDynamic*> newMID, float currentFade, bool bHide, bool bPath)
 	{
 		primitiveComp = newComponent;
 		baseMatInterface = newBaseMat;
 		fadeMID = newMID;
 		fadeCurrent = currentFade;
 		bToHide = bHide;
+		bIsPath = bPath;
 	}
 
 	void SetHideOnly(bool hide)
@@ -60,6 +64,7 @@ struct FFadeObjStruct
 		primitiveComp = nullptr;
 		fadeCurrent = 0;
 		bToHide = true;
+		bIsPath = false;
 	}
 };
 

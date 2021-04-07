@@ -71,7 +71,7 @@ void USLTurnToTargetBTTask::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* N
 	FVector LookVector = Target->GetActorLocation() - Owner->GetActorLocation();
 	LookVector.Z = 0.0f;
 	FRotator TargetRot = FRotationMatrix::MakeFromX(LookVector).Rotator();
-	if(abs(Owner->GetActorRotation().Yaw - TargetRot.Yaw) < 10)
+	if(abs(Owner->GetActorRotation().Yaw - TargetRot.Yaw) < 5)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return;
@@ -83,7 +83,6 @@ void USLTurnToTargetBTTask::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* N
 	{
 		USLSpiderBossAnimInstance* SpiderBossAnimInstance = Cast<USLSpiderBossAnimInstance>(SpiderBoss->GetMesh()->GetAnimInstance());
 		SpiderBossAnimInstance->SetCurrentPawnTurnSpeed(Owner->GetActorRotation().Yaw - LookAtRot.Yaw);
-		LOG(Warning, TEXT("%f"), Owner->GetActorRotation().Yaw - LookAtRot.Yaw);
 	}
 
 	Owner->SetActorRotation(LookAtRot);

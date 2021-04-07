@@ -7,7 +7,7 @@
 #include "SLEnemyWidget.generated.h"
 
 class ASLEnemy;
-
+class ASLSpiderBoss;
 
 DECLARE_DELEGATE_RetVal(float, FHPRatioDelegate);
 
@@ -21,6 +21,7 @@ class PROJECTSL_API USLEnemyWidget : public UUserWidget
 
 public :
 	void BindEnemy(ASLEnemy* Enemy);
+	void BindBoss(ASLSpiderBoss* SpiderBoss);
 protected :
 	void NativeConstruct() override;
 private :
@@ -30,7 +31,7 @@ public :
 protected :
 
 private :
-	UPROPERTY()
-	class UProgressBar* HPProgressBar;
 	FHPRatioDelegate GetHPRatio;
+
+	TWeakObjectPtr<class UImage> HPImage;
 };

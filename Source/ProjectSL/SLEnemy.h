@@ -10,7 +10,7 @@
 #include "Niagara/Public/NiagaraFunctionLibrary.h"
 #include "SLEnemy.generated.h"
 
-USTRUCT(BlueprintType)
+USTRUCT(Atomic, BlueprintType)
 struct FSLEnemyData : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
@@ -18,21 +18,21 @@ public:
 
 	FSLEnemyData() : ID(0), Name("NoName"), HP(0), AttackPower(0), AttackRange(0), AttackComboCount(0),RecognitionRange(0), WalkSpeed(0)
 	{}
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	uint8 ID;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Name;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float HP;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackPower;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackRange;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	uint8 AttackComboCount;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float RecognitionRange;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = EnemyData)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float WalkSpeed;
 };
 
@@ -53,10 +53,13 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+#if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 	void Attack();
 	void Dead();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -25,7 +25,7 @@ bool USLIsInAttackRangeBTDecorator::CalculateRawConditionValue(UBehaviorTreeComp
 	ASLCharacter* Target = Cast<ASLCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ASLEnemyAIController::TargetKey));
 	//CHECK(Target != nullptr);
 
-	LOG(Warning, TEXT("%f"), Target->GetDistanceTo(OwnerComp.GetAIOwner()->GetPawn()));
+	//LOG(Warning, TEXT("%f"), Target->GetDistanceTo(OwnerComp.GetAIOwner()->GetPawn()));
 	
 	bResult = (Target->GetDistanceTo(OwnerComp.GetAIOwner()->GetPawn()) <= AttackRange);
 	return bResult;

@@ -8,6 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnSkill1HitCheckDelegate);
 /**
  * 
  */
@@ -21,6 +22,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void PlayAttackMontage();
+	void PlayDodgeMontage();
 	void PlaySkill_Q_Montage();
 	void PlaySkill_W_Montage();
 	void PlaySkill_R_Montage();
@@ -28,16 +30,26 @@ public:
 	void PlaySkill_F_Montage();
 	void JumpToAttackMontageSection(int32 NewSection);
 
+	UFUNCTION()
+	UAnimMontage* GetAttackMontage() const { return AttackMontage; }
+	UFUNCTION()
+	UAnimMontage* GetSkillSMontage() const { return Skill_S_Montage; }
+	UFUNCTION()
+	UAnimMontage* GetDodgeMontage() const { return DodgeMontage; }
 public:
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
 	FOnAttackHitCheckDelegate OnAttackHitCheck;
+	FOnSkill1HitCheckDelegate OnSkill1HitCheck;
 	void SetDeadAnim() { IsDead = true; }
 
+	
 private:
 	UFUNCTION()
 		void AnimNotify_AttackHitCheck();
 	UFUNCTION()
 		void AnimNotify_NextAttackCheck();
+	UFUNCTION()
+		void AnimNotify_Skill_S_AttackCheck();
 	FName GetAttackMontageSectionName(int32 Section);
 
 private:
@@ -45,7 +57,8 @@ private:
 		float CurrentPawnSpeed;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* AttackMontage;
-
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* DodgeMontage;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* Skill_Q_Montage;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))

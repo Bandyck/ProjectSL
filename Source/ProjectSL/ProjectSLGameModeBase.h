@@ -16,4 +16,5 @@ class PROJECTSL_API AProjectSLGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 	AProjectSLGameModeBase();
+	//virtual void BeginPlay() override;
 };

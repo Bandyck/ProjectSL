@@ -6,10 +6,12 @@
 #include "SLSPBOSS_JumpAttackBTTask.h"
 #include "SLSpiderBossAIController.h"
 #include "SLBossProjectile.h"
+#include "SLBossAOEAttack.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "DrawDebugHelpers.h"
 
 USLSpiderBossAnimInstance::USLSpiderBossAnimInstance()
+	: InstancedAOEAttack(nullptr)
 {
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> AnimMontage(TEXT("/Game/Blueprints/SpiderBoss/AnimMontage/Archanid_Jump_Montage.Archanid_Jump_Montage"));
 	if (AnimMontage.Succeeded())
@@ -36,6 +38,24 @@ void USLSpiderBossAnimInstance::RangeAttackPlay()
 {
 	StopAllMontages(0.1f);
 	Montage_Play(RangeAttack);
+}
+
+void USLSpiderBossAnimInstance::BreathAttackPlay()
+{
+	StopAllMontages(0.1f);
+	Montage_Play(BreathAttack);
+}
+
+void USLSpiderBossAnimInstance::DeadMontagePlay()
+{
+	StopAllMontages(0.1f);
+	Montage_Play(DeadMontage);
+	FTimerHandle WaitHandle;
+	float WaitTime = DeadMontage->GetPlayLength() * 0.95f;
+	GetWorld()->GetTimerManager().SetTimer(WaitHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			Montage_Pause();
+		}), WaitTime, false);
 }
 
 
@@ -254,14 +274,56 @@ void USLSpiderBossAnimInstance::AnimNotify_BaseAttackEnd()
 
 void USLSpiderBossAnimInstance::AnimNotify_ProjectileSpawn()
 {
-	LOG_S(Warning);
-
 	FVector ProjectileLoc = GetOwningActor()->GetActorLocation();
 	ProjectileLoc.Z -= Cast<ASLSpiderBoss>(TryGetPawnOwner())->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-	
-	ASLBossProjectile* BossProjectile = GetWorld()->SpawnActor<ASLBossProjectile>();
-	BossProjectile->SetProjectileDir(GetOwningActor()->GetActorForwardVector());
+
+
+	ASLSpiderBoss* Enemy = Cast<ASLSpiderBoss>(TryGetPawnOwner());
+	FVector SpawnLocation = Enemy->GetActorLocation();
+
+	/*UBlueprint* TornadoBlueprint = Enemy->GetTorText();
+	if(TornadoBlueprint == nullptr)
+	{
+		LOG_S(Error);
+		return;
+	}*/
+	UClass* TSubclassOf = Enemy->GetTornadoProjectileClass();
+	if(TSubclassOf == nullptr)
+	{
+		LOG_S(Error);
+		return;
+	}
+	ASLBossProjectile* BossProjectile = Cast<ASLBossProjectile>(GetWorld()->SpawnActor(TSubclassOf, &ProjectileLoc));
+	ProjectileLoc.Z += BossProjectile->GetHeight();
 	BossProjectile->SetActorLocation(ProjectileLoc);
+	BossProjectile->SetActorEnableCollision(true);
+	Cast<UCapsuleComponent>(BossProjectile->GetRootComponent())->SetGenerateOverlapEvents(true);
+	
+	if(BossProjectile == nullptr)
+	{
+		LOG_S(Error);
+		return;
+	}
+
+	BossProjectile->SetOwner(Enemy);
+	BossProjectile->SetProjectileDir(GetOwningActor()->GetActorForwardVector());
+}
+
+void USLSpiderBossAnimInstance::AnimNotify_BreathStart()
+{
+	FVector BreathStartLocation = GetSkelMeshComponent()->GetSocketLocation(FName("Mouse"));
+	ASLSpiderBoss* Enemy = Cast<ASLSpiderBoss>(TryGetPawnOwner());
+	FRotator BreathRotation = FRotator(-130, 0, 0) + Enemy->GetActorRotation();
+	ASLBossAOEAttack* BossBreath = Cast<ASLBossAOEAttack>(GetWorld()->SpawnActor(Enemy->GetBreathAttackClass(), &BreathStartLocation, &BreathRotation));
+	BossBreath->SetOwner(Enemy);
+	InstancedAOEAttack = BossBreath;
+}
+
+void USLSpiderBossAnimInstance::AnimNotify_BreathEnd()
+{
+	ASLSpiderBoss* Enemy = Cast<ASLSpiderBoss>(TryGetPawnOwner());
+	InstancedAOEAttack->DeactivateAOEAttack();
+	InstancedAOEAttack = nullptr;
 }
 
 

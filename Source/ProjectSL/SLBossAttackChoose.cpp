@@ -7,7 +7,6 @@
 EBTNodeResult::Type USLBossAttackChoose::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
-
-	OwnerComp.GetBlackboardComponent()->SetValueAsInt(FName("AttackType"), FMath::RandRange(0, 1));
+	OwnerComp.GetBlackboardComponent()->SetValueAsInt(FName("AttackType"), FMath::RandRange(0, 2));
 	return EBTNodeResult::Failed;
 }

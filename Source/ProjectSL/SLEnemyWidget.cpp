@@ -2,7 +2,9 @@
 
 
 #include "SLEnemyWidget.h"
+#include "SLSpiderBoss.h"
 #include "SLEnemy.h"
+#include "Components/Image.h"
 #include "Components/ProgressBar.h"
 
 void USLEnemyWidget::BindEnemy(ASLEnemy* Enemy)
@@ -11,21 +13,32 @@ void USLEnemyWidget::BindEnemy(ASLEnemy* Enemy)
 	Enemy->OnHPChange.AddUObject(this, &USLEnemyWidget::UpdateHPBar);
 }
 
+void USLEnemyWidget::BindBoss(ASLSpiderBoss* SpiderBoss)
+{
+	/*GetHPRatio.BindUObject(SpiderBoss, );
+	SpiderBoss->*/
+	GetHPRatio.BindUObject(SpiderBoss, &ASLSpiderBoss::GetHPRatio);
+	SpiderBoss->HPChanged.AddUObject(this, &USLEnemyWidget::UpdateHPBar);
+}
+
+
 void USLEnemyWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	HPProgressBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("PB_HPBar")));
+	HPImage = Cast<UImage>(GetWidgetFromName(TEXT("HPBar")));
+	CHECK(nullptr != HPImage);
+	/*HPProgressBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("PB_HPBar")));
 	CHECK(nullptr != HPProgressBar);
-	UpdateHPBar();
+	UpdateHPBar();*/
 }
 
 void USLEnemyWidget::UpdateHPBar()
 {
 	if(GetHPRatio.IsBound() == true)
 	{
-		if (nullptr != HPProgressBar)
+		if (nullptr != HPImage)
 		{
-			HPProgressBar->SetPercent(GetHPRatio.Execute());
+			HPImage->GetDynamicMaterial()->SetScalarParameterValue(FName("percentage"), GetHPRatio.Execute());
 		}
 	}
 }

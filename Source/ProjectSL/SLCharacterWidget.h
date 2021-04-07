@@ -20,9 +20,12 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 	void UpdateHPWidget();
-
+	void UpdateMPWidget();
 private:
 	TWeakObjectPtr<class USLCharacterStatComponent> CurrentCharacterStat;
 	UPROPERTY()
-	class UProgressBar* HPProgressBar;
+	UUserWidget* UWHPWidget;
+
+	TWeakObjectPtr<class UImage> HPImage;
+	TWeakObjectPtr<class UImage> MPImage;
 };

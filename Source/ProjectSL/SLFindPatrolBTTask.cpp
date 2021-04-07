@@ -14,7 +14,6 @@ USLFindPatrolBTTask::USLFindPatrolBTTask()
 
 EBTNodeResult::Type USLFindPatrolBTTask::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	LOG_S(Warning);
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
@@ -32,14 +31,14 @@ EBTNodeResult::Type USLFindPatrolBTTask::ExecuteTask(UBehaviorTreeComponent& Own
 	}
 
 	FVector Origin = OwnerComp.GetBlackboardComponent()->GetValueAsVector(ASLEnemyAIController::HomePosKey);
-	FNavLocation NextPatrol;
+	FVector NextPatrol;
 
-	if(NavSystem->GetRandomPointInNavigableRadius(Origin, 500.0f, NextPatrol))
+	if(NavSystem->K2_GetRandomLocationInNavigableRadius(GetWorld(), Origin, NextPatrol, 500.f))
 	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsVector(ASLEnemyAIController::PatrolPosKey, NextPatrol.Location);
+		OwnerComp.GetBlackboardComponent()->SetValueAsVector(ASLEnemyAIController::PatrolPosKey, NextPatrol);
 		return EBTNodeResult::Succeeded;
 	}
-	LOG_S(Error);
+	LOG(Error, TEXT("%s"), *OwnerComp.GetOwner()->GetName());
 	return EBTNodeResult::Failed;
 }
 

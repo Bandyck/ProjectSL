@@ -2,6 +2,7 @@
 
 
 #include "SLAnimInstance.h"
+#include "DrawDebugHelpers.h"
 
 USLAnimInstance::USLAnimInstance()
 {
@@ -13,6 +14,12 @@ USLAnimInstance::USLAnimInstance()
 	if (ATTACK_MONTAGE.Succeeded())
 	{
 		AttackMontage = ATTACK_MONTAGE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DODGE_MONTAGE(TEXT("/Game/Animation/Character_Dodge_Montage.Character_Dodge_Montage"));
+	if (DODGE_MONTAGE.Succeeded())
+	{
+		DodgeMontage = DODGE_MONTAGE.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKILL_Q_MONTAGE(TEXT("/Game/Animation/Character_Skill_Q_Montage.Character_Skill_Q_Montage"));
@@ -66,6 +73,13 @@ void USLAnimInstance::PlayAttackMontage()
 	Montage_Play(AttackMontage, 1.0f);
 }
 
+void USLAnimInstance::PlayDodgeMontage()
+{
+	CHECK(!IsDead);
+	Montage_Play(DodgeMontage, 1.15f);
+}
+
+
 void USLAnimInstance::PlaySkill_Q_Montage()
 {
 	CHECK(!IsDead);
@@ -112,8 +126,19 @@ void USLAnimInstance::AnimNotify_AttackHitCheck()
 
 void USLAnimInstance::AnimNotify_NextAttackCheck()
 {
+	if(Montage_IsPlaying(AttackMontage) == false)
+	{
+		LOG_S(Error);
+		return;
+	}
 	OnNextAttackCheck.Broadcast();
 }
+
+void USLAnimInstance::AnimNotify_Skill_S_AttackCheck()
+{
+	OnSkill1HitCheck.Broadcast();
+}
+
 
 FName USLAnimInstance::GetAttackMontageSectionName(int32 Section)
 {

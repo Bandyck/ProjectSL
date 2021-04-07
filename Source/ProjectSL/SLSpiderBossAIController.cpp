@@ -32,6 +32,7 @@ void ASLSpiderBossAIController::OnPossess(APawn* InPawn)
 		if (!RunBehaviorTree(BTAsset))
 		{
 			LOG(Error, TEXT("AIController couldn't run behavior tree!"));
+			return;
 		}
 	}
 }

@@ -9,6 +9,8 @@
 #include "Niagara/Public/NiagaraFunctionLibrary.h"
 #include "SLCharacter.generated.h"
 
+class USLSkillSlot;
+
 UCLASS()
 class PROJECTSL_API ASLCharacter : public ACharacter
 {
@@ -19,6 +21,7 @@ public:
 	ASLCharacter();
 
 	void Attack();
+	void Dodge();
 	void Skill_Q();
 	void Skill_W();
 	void Skill_R();
@@ -27,6 +30,8 @@ public:
 
 	UFUNCTION()
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
+		void OnDodgeMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UFUNCTION()
 		void OnSkill_Q_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UFUNCTION()
@@ -42,6 +47,7 @@ public:
 	void AttackEndComboState();
 	
 	void AttackCheck();
+	void Skill1Check();
 
 protected:
 	// Called when the game starts or when spawned
@@ -68,6 +74,8 @@ public:
 		class UWidgetComponent* HPBarWidget;
 	UPROPERTY(VisibleAnywhere, Category = UI)
 		class UWidgetComponent* Skill_Quickslot;
+	UPROPERTY(BlueprintReadWrite)
+	AActor* InteractableActor;
 
 	bool IsMovable()
 	{
@@ -104,5 +112,19 @@ private:
 		float AttackRadius;
 
 	UPROPERTY()
-		bool IsSkilling;
+	FRotator TargetRotator;
+	UPROPERTY()
+	bool needTurn;
+	UPROPERTY()
+	bool IsSkilling;
+	UPROPERTY()
+	UTexture2D* Skill_1_Icon;
+	UPROPERTY()
+	float Skill_1_CoolTime;
+	UPROPERTY()
+	float Skill_1_Damage;
+	UPROPERTY()
+	float Skill_1_MPConsumption;;
+	UPROPERTY()
+	TArray<USLSkillSlot*> Slots;
 };

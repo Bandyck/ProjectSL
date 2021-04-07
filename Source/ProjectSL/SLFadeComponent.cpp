@@ -21,7 +21,7 @@ USLFadeComponent::USLFadeComponent()
 
 	capsuleHalfHeight = 88.0f;
 	capsuleRadius = 34.0f;
-
+	
 	workDistance = 5000.0f;
 	nearCameraRadius = 300.0f;
 
@@ -30,7 +30,7 @@ USLFadeComponent::USLFadeComponent()
 
 	immediatelyFade = 0.5f; 
 	playerClass = ASLCharacter::StaticClass();
-	static ConstructorHelpers::FObjectFinder<UMaterial> FADE_MATERIAL(TEXT("/Game/InfinityBladeEffects/Effects/FX_Materials/Mobile/M_Bats_Trans_mobile.M_Bats_Trans_mobile"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> FADE_MATERIAL(TEXT("/Game/InfinityBladeEffects/Effects/FX_Materials/Mobile/M_SmokeSingle_Add.M_SmokeSingle_Add"));
 	if (FADE_MATERIAL.Succeeded())
 	{
 		fadeMaterial = (UMaterial*)FADE_MATERIAL.Object;
@@ -137,14 +137,24 @@ void USLFadeComponent::AddObjectsToHide()
 				// Set new material on object
 				fadeObjectsHit[fO]->SetMaterial(nM, lMidMaterials.Last());
 			}
-			// Create new fade object in array of objects to fade
+			
+
 			FFadeObjStruct newObject;
-			newObject.NewElement(fadeObjectsHit[fO], lBaseMaterials, lMidMaterials, immediatelyFade, true);
+			// Set collision on Primitive Component
+			if(fadeObjectsHit[fO]->GetCollisionResponseToChannel(ECC_Visibility) != ECR_Ignore)
+			{
+				fadeObjectsHit[fO]->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+				newObject.NewElement(fadeObjectsHit[fO], lBaseMaterials, lMidMaterials, immediatelyFade, true, true);
+			}
+			else
+			{
+				newObject.NewElement(fadeObjectsHit[fO], lBaseMaterials, lMidMaterials, immediatelyFade, true, false);
+			}
+			fadeObjectsHit[fO]->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+			
+			// Create new fade object in array of objects to fade
 			// Add object to array
 			fadeObjects.Add(newObject);
-
-			// Set collision on Primitive Component
-			fadeObjectsHit[fO]->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 		}
 	}
 
@@ -182,6 +192,8 @@ void USLFadeComponent::FadeObjWorker()
 				adaptiveFade = farObjectFade;
 			}
 
+			//LOG(Warning, TEXT("%d"), fadeObjects[i].fadeMID.Num());
+			
 			// For loop fadeMID array
 			for (int t = 0; t < fadeObjects[i].fadeMID.Num(); ++t)
 			{
@@ -201,7 +213,10 @@ void USLFadeComponent::FadeObjWorker()
 				const float newFade = FMath::FInterpConstantTo(currentF, targetF, GetWorld()->GetDeltaSeconds(), fadeRate);
 
 				fadeObjects[i].fadeMID[t]->SetScalarParameterValue("Fade", newFade);
-
+				FHashedMaterialParameterInfo HashedMaterialParameterInfo;
+				float value = -1.f;
+				fadeObjects[i].fadeMID[t]->GetScalarParameterValue(FName(TEXT("Fade")), value);
+				
 				currentFade = newFade;
 
 				fadeObjects[i].SetFadeAndHide(newFade, fadeObjects[i].bToHide);
@@ -214,6 +229,11 @@ void USLFadeComponent::FadeObjWorker()
 					fadeObjects[fnID].primitiveComp->SetMaterial(bmi, fadeObjects[fnID].baseMatInterface[bmi]);
 				}
 
+				if(fadeObjects[fnID].bIsPath == true)
+				{
+					fadeObjects[fnID].primitiveComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+				}
+				
 				fadeObjects[fnID].primitiveComp->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
 				fadeObjects.RemoveAt(fnID);
 				fadeObjectsTemp.RemoveAt(fnID);

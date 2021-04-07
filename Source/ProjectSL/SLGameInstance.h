@@ -13,12 +13,14 @@ struct FSLCharacterData : public FTableRowBase
 	GENERATED_BODY()
 
 public:
-	FSLCharacterData() : Level(1), MaxHP(100.0f), Attack(10.0f) {}
+	FSLCharacterData() : Level(1), MaxHP(100.0f), MaxMP(100.0f), Attack(10.0f) {}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		int32 Level;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		float MaxHP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		float MaxMP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		float Attack;
 };

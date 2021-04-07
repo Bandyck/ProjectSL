@@ -8,6 +8,7 @@ ASLPlayerController::ASLPlayerController()
 {
 	bShowMouseCursor = true;
 	bEnableMouseOverEvents = true;
+	bEnableClickEvents = true;
 	//MyCharacter = GetPawn();
 }
 
@@ -24,6 +25,14 @@ void ASLPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
+
+	/*FHitResult Hit;
+	GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+	if (Hit.bBlockingHit)
+	{
+		LOG(Warning, TEXT("%s"), *Hit.ToString());
+	}
+	*/
 	if (bClickedMouse)
 	{
 		MoveToMouseCursor();
